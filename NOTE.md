@@ -10,7 +10,7 @@
   la regex del codice fiscale), ma non è obbligatorio; al netto di casi
   particolari, meglio se non lo fa, perché così è certo che se il dominio
   cambia, l'adapter non ne risente e non è necessario aggiornarlo
-- l'input dello use case non contiene logica di validazione: questo permette di
+- l'input dello use case è un semplice DTO: questo permette di
   non dover scrivere logiche complesse per convertire i dati validati
   dall'adapter in oggetti del dominio
 - non servono type assertion nello use case o nell'adapter
