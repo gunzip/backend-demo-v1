@@ -12,6 +12,7 @@
 - l'input dello use case non contiene logica di validazione: questo permette di
   non dover scrivere logiche complesse per convertire i dati validati
   dall'adapter in oggetti del dominio
+- non servono type assertion nello use case o nell'adapter
 - non servono wrapper per convertire i dati validati dall'adapter in oggetti del
   dominio, perché l'input dello use case è un semplice DTO
 - i tipi Error custom utilizzano la property `name` per identificare il tipo di errore; questo evita che venga

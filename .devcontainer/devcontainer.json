@@ -1,0 +1,64 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:debian@sha256:a30da48cdf5f9144ff7f2156622e701e752fc258d77ca7bb00120624f1a95938",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24",
+      "installYarnUsingApt": false,
+      "pnpmVersion": "none",
+      "nvmInstallPath": "/opt/nvm"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false
+    },
+    "ghcr.io/devcontainers-extra/features/nx-npm:1": {},
+    "ghcr.io/devcontainers/features/copilot-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
+      "packages": "ripgrep,xdg-utils"
+    }
+  },
+  "postStartCommand": {
+    "set-workspace-as-safe-dir": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+  },
+  "containerEnv": {
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
+    "NX_DAEMON": "true",
+    "EDITOR": "code --reuse-window --wait"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "-vscjava.vscode-java-pack",
+        "-ms-dotnettools.csharp",
+        "-ms-azuretools.vscode-azureterraform",
+        "ms-azuretools.vscode-azure-github-copilot",
+        "ms-vscode.vscode-websearchforcopilot",
+        "ms-azuretools.vscode-azureterraform",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "esbenp.prettier-vscode",
+        "unifiedjs.vscode-mdx",
+        "EditorConfig.EditorConfig",
+        "bruno-api-client.bruno",
+        "vitest.explorer",
+        "redhat.vscode-yaml",
+        "dbaeumer.vscode-eslint",
+        "github.copilot",
+        "github.copilot-chat",
+        "nrwl.angular-console"
+      ]
+    },
+    "jetbrains": {
+      "plugins": [
+        "org.intellij.plugins.hcl",
+        "com.intellij.mermaid",
+        "mdx.js",
+        "dev.nx.console",
+        "ru.adelf.idea.dotenv",
+        "mobi.hsz.idea.gitignore",
+        "org.editorconfig.editorconfigjetbrains",
+        "intellij.prettierJS"
+      ]
+    }
+  }
+}

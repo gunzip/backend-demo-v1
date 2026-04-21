@@ -308,4 +308,4 @@ terraform.rc
 **/_modules/**/.terraform.lock.hcl
 
 .nx
-
+.pnpm-store

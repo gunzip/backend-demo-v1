@@ -40,4 +40,42 @@ describe("adult check route", () => {
       error: "birth_date year does not match the fiscal_code year",
     });
   });
+
+  it("returns RFC 7807 problem details when the request body is invalid", async () => {
+    const app = createApp();
+
+    const response = await app.request("/users/is-adult", {
+      body: JSON.stringify({
+        birth_date: "1980/01/01",
+        fiscal_code: "invalid",
+      }),
+      headers: {
+        "content-type": "application/json",
+      },
+      method: "POST",
+    });
+
+    expect(response.status).toBe(422);
+    expect(response.headers.get("content-type")).toContain(
+      "application/problem+json",
+    );
+    await expect(response.json()).resolves.toEqual({
+      detail: "The request payload did not satisfy the schema constraints.",
+      errors: [
+        {
+          code: "invalid_string",
+          message: "birth_date must use YYYY-MM-DD format",
+          path: ["json", "birth_date"],
+        },
+        {
+          code: "invalid_string",
+          message: "Invalid",
+          path: ["json", "fiscal_code"],
+        },
+      ],
+      status: 422,
+      title: "Request validation failed",
+      type: "https://example.com/problems/validation-error",
+    });
+  });
 });

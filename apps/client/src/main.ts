@@ -52,17 +52,9 @@ const response = await client.users["is-adult"].$post({
 
 if (!response.ok) {
   const errorPayload = await response.json();
-  const errorMessage =
-    typeof errorPayload === "object" &&
-    errorPayload !== null &&
-    "error" in errorPayload &&
-    typeof errorPayload.error === "string"
-      ? errorPayload.error
-      : "Unknown API error";
-
-  throw new Error(
-    `Request failed with status ${response.status}: ${errorMessage}`,
-  );
+  console.error("Request failed with status", response.status);
+  console.error("Error details:", JSON.stringify(errorPayload, null, 2));
+  process.exit(1);
 }
 
 const result = await response.json();
