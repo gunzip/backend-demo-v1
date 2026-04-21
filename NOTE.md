@@ -5,6 +5,7 @@
 - la validazione dell'adapter avviene indipendentemente da quella del dominio
 - il dominio effettua una sua validazione, totalmente indipendente da quella
   dell'adapter; nell'esempio non usa zod (ma potrebbe)
+- il design delle OpenAPI può procedere prima e indipendentemente da quello del dominio
 - l'adapter _può_ eventualmente condividere delle invarianti con il dominio (es.
   la regex del codice fiscale), ma non è obbligatorio; al netto di casi
   particolari, meglio se non lo fa, perché così è certo che se il dominio
@@ -16,3 +17,7 @@
   dominio, perché l'input dello use case è un semplice DTO
 - i tipi Error custom utilizzano la property `name` per identificare il tipo di errore; questo evita che venga
   stampato un errore generico "Error: ..." quando viene lanciato un errore custom
+
+## Contro
+
+- l'espressività delle openapi è limitata dalla bontà del framework utilizzato
