@@ -4,7 +4,6 @@ import {
 } from "@hono/zod-openapi";
 import type { OpenAPIHono } from "@hono/zod-openapi";
 import { FISCAL_CODE_REGEX } from "../../../domain/fiscal-code";
-import { InvalidUserInputError } from "../../../domain/errors";
 import { checkUserIsAdult } from "../../../use-cases/check-user-is-adult";
 
 const BirthDateSchema = z
@@ -71,27 +70,21 @@ export const checkUserIsAdultRoute = createRoute({
 export function registerCheckUserIsAdultRoute<TApp extends OpenAPIHono>(
   app: TApp
 ) {
-  return app.openapi(checkUserIsAdultRoute, (context) => {
+  return app.openapi(checkUserIsAdultRoute, async (context) => {
     const body = context.req.valid("json");
 
-    try {
-      const isUserAdult = checkUserIsAdult({
-        birthDate: body.birth_date,
-        fiscalCode: body.fiscal_code
-      });
-
-      return context.json(isUserAdult, 200);
-    } catch (error) {
-      if (error instanceof InvalidUserInputError) {
-        return context.json(
+    return checkUserIsAdult({
+      birthDate: body.birth_date,
+      fiscalCode: body.fiscal_code
+    }).match(
+      (isUserAdult) => context.json(isUserAdult, 200),
+      (error) =>
+        context.json(
           {
             error: error.message
           },
           400
-        );
-      }
-
-      throw error;
-    }
+        )
+    );
   });
 }
