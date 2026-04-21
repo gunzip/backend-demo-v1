@@ -22,24 +22,21 @@ export class FiscalCode {
     return this.value.slice(6, 8);
   }
 
+  assertBirthYearMatches(birthDate: Date): void {
+    const birthYear = birthDate
+      .getUTCFullYear()
+      .toString()
+      .slice(-2)
+      .padStart(2, "0");
+
+    if (this.encodedBirthYear !== birthYear) {
+      throw new InvalidUserInputError(
+        "birth_date year does not match the fiscal_code year"
+      );
+    }
+  }
+
   toString(): string {
     return this.value;
-  }
-}
-
-export function assertFiscalCodeBirthYearMatches(
-  fiscalCode: FiscalCode,
-  birthDate: Date
-): void {
-  const birthYear = birthDate
-    .getUTCFullYear()
-    .toString()
-    .slice(-2)
-    .padStart(2, "0");
-
-  if (fiscalCode.encodedBirthYear !== birthYear) {
-    throw new InvalidUserInputError(
-      "birth_date year does not match the fiscal_code year"
-    );
   }
 }

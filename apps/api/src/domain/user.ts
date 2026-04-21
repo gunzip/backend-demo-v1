@@ -1,24 +1,26 @@
 import type { FiscalCode } from "./fiscal-code";
 
-export type User = {
-  fiscalCode: FiscalCode;
-  birthDate: Date;
-};
-
 const ADULT_AGE = 18;
 
-export function isAdult(user: User, referenceDate: Date = new Date()): boolean {
-  const birthYear = user.birthDate.getUTCFullYear();
-  let age = referenceDate.getUTCFullYear() - birthYear;
+export class User {
+  constructor(
+    readonly fiscalCode: FiscalCode,
+    readonly birthDate: Date
+  ) {}
 
-  const hasReachedBirthday =
-    referenceDate.getUTCMonth() > user.birthDate.getUTCMonth() ||
-    (referenceDate.getUTCMonth() === user.birthDate.getUTCMonth() &&
-      referenceDate.getUTCDate() >= user.birthDate.getUTCDate());
+  isAdult(referenceDate: Date = new Date()): boolean {
+    const birthYear = this.birthDate.getUTCFullYear();
+    let age = referenceDate.getUTCFullYear() - birthYear;
 
-  if (!hasReachedBirthday) {
-    age -= 1;
+    const hasReachedBirthday =
+      referenceDate.getUTCMonth() > this.birthDate.getUTCMonth() ||
+      (referenceDate.getUTCMonth() === this.birthDate.getUTCMonth() &&
+        referenceDate.getUTCDate() >= this.birthDate.getUTCDate());
+
+    if (!hasReachedBirthday) {
+      age -= 1;
+    }
+
+    return age >= ADULT_AGE;
   }
-
-  return age >= ADULT_AGE;
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { InvalidUserInputError } from "./errors";
-import { assertFiscalCodeBirthYearMatches, FiscalCode } from "./fiscal-code";
+import { FiscalCode } from "./fiscal-code";
 
 describe("FiscalCode", () => {
   it("returns the fiscal code in canonical format", () => {
@@ -12,11 +12,10 @@ describe("FiscalCode", () => {
   });
 });
 
-describe("assertFiscalCodeBirthYearMatches", () => {
+describe("FiscalCode.assertBirthYearMatches", () => {
   it("throws when the birth year does not match the encoded year", () => {
     expect(() =>
-      assertFiscalCodeBirthYearMatches(
-        new FiscalCode("RSSMRA81A01H501U"),
+      new FiscalCode("RSSMRA81A01H501U").assertBirthYearMatches(
         new Date("1980-01-01T00:00:00.000Z")
       )
     ).toThrow(InvalidUserInputError);

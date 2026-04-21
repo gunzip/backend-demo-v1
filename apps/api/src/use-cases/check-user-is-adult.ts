@@ -1,9 +1,6 @@
-import {
-  assertFiscalCodeBirthYearMatches,
-  FiscalCode
-} from "../domain/fiscal-code";
+import { FiscalCode } from "../domain/fiscal-code";
 import { InvalidUserInputError } from "../domain/errors";
-import { isAdult } from "../domain/user";
+import { User } from "../domain/user";
 
 export type CheckUserIsAdultInput = {
   fiscalCode: string;
@@ -52,13 +49,7 @@ export function checkUserIsAdult({
   const parsedBirthDate = parseBirthDate(birthDate);
   const normalizedFiscalCode = new FiscalCode(fiscalCode);
 
-  assertFiscalCodeBirthYearMatches(normalizedFiscalCode, parsedBirthDate);
+  normalizedFiscalCode.assertBirthYearMatches(parsedBirthDate);
 
-  return isAdult(
-    {
-      birthDate: parsedBirthDate,
-      fiscalCode: normalizedFiscalCode
-    },
-    referenceDate
-  );
+  return new User(normalizedFiscalCode, parsedBirthDate).isAdult(referenceDate);
 }
