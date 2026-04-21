@@ -1,4 +1,4 @@
-import { okAsync, Result, type ResultAsync } from "neverthrow";
+import { okAsync, Result } from "neverthrow";
 
 import { BirthDate } from "../domain/birth-date";
 import { InvalidUserInputError } from "../domain/errors";
@@ -11,7 +11,7 @@ export interface CheckUserIsAdultInput {
   referenceDate?: Date;
 }
 
-function mapInvalidUserInputError(error: unknown): InvalidUserInputError {
+function mapInvalidUserInputError(error: unknown) {
   if (error instanceof InvalidUserInputError) {
     return error;
   }
@@ -48,7 +48,7 @@ export function checkUserIsAdult({
   birthDate,
   fiscalCode,
   referenceDate,
-}: CheckUserIsAdultInput): ResultAsync<boolean, InvalidUserInputError> {
+}: CheckUserIsAdultInput) {
   return createBirthDateResult(birthDate)
     .andThen((parsedBirthDate) =>
       createFiscalCodeResult(fiscalCode).map((normalizedFiscalCode) => ({
