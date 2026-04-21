@@ -35,9 +35,15 @@ describe("adult check route", () => {
       method: "POST",
     });
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(422);
+    expect(response.headers.get("content-type")).toContain(
+      "application/problem+json",
+    );
     await expect(response.json()).resolves.toEqual({
-      error: "birth_date year does not match the fiscal_code year",
+      detail: "birth_date year does not match the fiscal_code year",
+      status: 422,
+      title: "Domain validation error",
+      type: "https://example.com/problems/domain-error",
     });
   });
 
@@ -55,7 +61,7 @@ describe("adult check route", () => {
       method: "POST",
     });
 
-    expect(response.status).toBe(422);
+    expect(response.status).toBe(400);
     expect(response.headers.get("content-type")).toContain(
       "application/problem+json",
     );
@@ -73,7 +79,7 @@ describe("adult check route", () => {
           path: ["json", "fiscal_code"],
         },
       ],
-      status: 422,
+      status: 400,
       title: "Request validation failed",
       type: "https://example.com/problems/validation-error",
     });

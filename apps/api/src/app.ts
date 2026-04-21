@@ -8,7 +8,7 @@ export function createApp() {
     new OpenAPIHono({
       defaultHook: (result, c) => {
         if (!result.success) {
-          return c.json(toProblemDetails(result), 422, {
+          return c.json(toProblemDetails(result), 400, {
             "content-type": "application/problem+json",
           });
         }
@@ -37,7 +37,7 @@ function toProblemDetails(result: { error: ZodError; target?: string }) {
         (segment): segment is number | string => segment !== undefined,
       ),
     })),
-    status: 422,
+    status: 400,
     title: "Request validation failed",
     type: "https://example.com/problems/validation-error",
   };

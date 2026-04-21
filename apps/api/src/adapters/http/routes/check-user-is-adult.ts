@@ -25,13 +25,18 @@ const AdultCheckRequestSchema = z
   })
   .openapi("AdultCheckRequest");
 
-const ErrorResponseSchema = z
+const ProblemDetailsSchema = z
   .object({
-    error: z.string().openapi({
+    detail: z.string().openapi({
       example: "birth_date year does not match the fiscal_code year",
     }),
+    status: z.number().openapi({ example: 400 }),
+    title: z.string().openapi({ example: "Domain validation error" }),
+    type: z.string().openapi({
+      example: "https://example.com/problems/domain-error",
+    }),
   })
-  .openapi("AdultCheckError");
+  .openapi("ProblemDetails");
 
 export const checkUserIsAdultRoute = createRoute({
   method: "post",
@@ -57,10 +62,10 @@ export const checkUserIsAdultRoute = createRoute({
       },
       description: "Whether the user is an adult",
     },
-    400: {
+    422: {
       content: {
-        "application/json": {
-          schema: ErrorResponseSchema,
+        "application/problem+json": {
+          schema: ProblemDetailsSchema,
         },
       },
       description: "Domain validation error",
@@ -84,9 +89,13 @@ export function registerCheckUserIsAdultRoute<TApp extends OpenAPIHono>(
       (error) =>
         context.json(
           {
-            error: error.message,
+            detail: error.message,
+            status: 422,
+            title: "Domain validation error",
+            type: "https://example.com/problems/domain-error",
           },
-          400,
+          422,
+          { "content-type": "application/problem+json" },
         ),
     );
   });
