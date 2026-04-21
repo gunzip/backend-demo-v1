@@ -1,3 +1,4 @@
+import type { BirthDate } from "./birth-date";
 import type { FiscalCode } from "./fiscal-code";
 
 const ADULT_AGE = 18;
@@ -5,19 +6,14 @@ const ADULT_AGE = 18;
 export class User {
   constructor(
     readonly fiscalCode: FiscalCode,
-    readonly birthDate: Date
+    readonly birthDate: BirthDate
   ) {}
 
   isAdult(referenceDate: Date = new Date()): boolean {
-    const birthYear = this.birthDate.getUTCFullYear();
+    const birthYear = this.birthDate.year;
     let age = referenceDate.getUTCFullYear() - birthYear;
 
-    const hasReachedBirthday =
-      referenceDate.getUTCMonth() > this.birthDate.getUTCMonth() ||
-      (referenceDate.getUTCMonth() === this.birthDate.getUTCMonth() &&
-        referenceDate.getUTCDate() >= this.birthDate.getUTCDate());
-
-    if (!hasReachedBirthday) {
+    if (!this.birthDate.hasReachedBirthday(referenceDate)) {
       age -= 1;
     }
 

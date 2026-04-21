@@ -1,3 +1,4 @@
+import type { BirthDate } from "./birth-date";
 import { InvalidUserInputError } from "./errors";
 
 export const FISCAL_CODE_REGEX =
@@ -22,14 +23,8 @@ export class FiscalCode {
     return this.value.slice(6, 8);
   }
 
-  assertBirthYearMatches(birthDate: Date): void {
-    const birthYear = birthDate
-      .getUTCFullYear()
-      .toString()
-      .slice(-2)
-      .padStart(2, "0");
-
-    if (this.encodedBirthYear !== birthYear) {
+  assertBirthYearMatches(birthDate: BirthDate): void {
+    if (this.encodedBirthYear !== birthDate.yearTwoDigits) {
       throw new InvalidUserInputError(
         "birth_date year does not match the fiscal_code year"
       );

@@ -1,17 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { InvalidUserInputError } from "../domain/errors";
-import {
-  checkUserIsAdult,
-  parseBirthDate
-} from "./check-user-is-adult";
-
-describe("parseBirthDate", () => {
-  it("rejects impossible calendar dates", () => {
-    expect(() => parseBirthDate("2024-02-30")).toThrow(
-      InvalidUserInputError
-    );
-  });
-});
+import { checkUserIsAdult } from "./check-user-is-adult";
 
 describe("checkUserIsAdult", () => {
   it("returns true when the user is adult and the fiscal code year matches", async () => {
