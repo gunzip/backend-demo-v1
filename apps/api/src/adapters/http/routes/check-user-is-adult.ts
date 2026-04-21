@@ -1,5 +1,7 @@
-import { createRoute, z } from "@hono/zod-openapi";
 import type { OpenAPIHono } from "@hono/zod-openapi";
+
+import { createRoute, z } from "@hono/zod-openapi";
+
 import { FISCAL_CODE_REGEX } from "../../../domain/fiscal-code";
 import { checkUserIsAdult } from "../../../use-cases/check-user-is-adult";
 

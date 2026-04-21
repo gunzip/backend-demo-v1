@@ -6,7 +6,7 @@ const ADULT_AGE = 18;
 export class User {
   constructor(
     readonly fiscalCode: FiscalCode,
-    readonly birthDate: BirthDate
+    readonly birthDate: BirthDate,
   ) {}
 
   isAdult(referenceDate: Date = new Date()): boolean {

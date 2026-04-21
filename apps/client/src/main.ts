@@ -1,11 +1,20 @@
 import { hc } from "hono/client";
+
 import type { AppType } from "../../api/src";
+
 import { loadClientConfig } from "./config";
 
-type CliArgs = {
+interface CliArgs {
   birthDate: string;
   fiscalCode: string;
-};
+}
+
+function parseCliArgs(args: string[]): CliArgs {
+  return {
+    birthDate: readRequiredOption(args, "--birth-date"),
+    fiscalCode: readRequiredOption(args, "--fiscal-code"),
+  };
+}
 
 function readRequiredOption(
   args: string[],
@@ -28,13 +37,6 @@ function readRequiredOption(
   }
 
   return optionValue;
-}
-
-function parseCliArgs(args: string[]): CliArgs {
-  return {
-    birthDate: readRequiredOption(args, "--birth-date"),
-    fiscalCode: readRequiredOption(args, "--fiscal-code"),
-  };
 }
 
 const config = loadClientConfig(process.env);

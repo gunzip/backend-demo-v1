@@ -1,4 +1,5 @@
 import type { BirthDate } from "./birth-date";
+
 import { InvalidUserInputError } from "./errors";
 
 export const FISCAL_CODE_REGEX =
@@ -7,26 +8,26 @@ export const FISCAL_CODE_REGEX =
 export class FiscalCode {
   readonly value: string;
 
+  get encodedBirthYear(): string {
+    return this.value.slice(6, 8);
+  }
+
   constructor(fiscalCode: string) {
     const normalizedFiscalCode = fiscalCode.trim().toUpperCase();
 
     if (!FISCAL_CODE_REGEX.test(normalizedFiscalCode)) {
       throw new InvalidUserInputError(
-        "fiscal_code must be a valid Italian fiscal code in canonical format"
+        "fiscal_code must be a valid Italian fiscal code in canonical format",
       );
     }
 
     this.value = normalizedFiscalCode;
   }
 
-  get encodedBirthYear(): string {
-    return this.value.slice(6, 8);
-  }
-
   assertBirthYearMatches(birthDate: BirthDate): void {
     if (this.encodedBirthYear !== birthDate.yearTwoDigits) {
       throw new InvalidUserInputError(
-        "birth_date year does not match the fiscal_code year"
+        "birth_date year does not match the fiscal_code year",
       );
     }
   }

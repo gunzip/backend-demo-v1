@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { InvalidUserInputError } from "../../domain/errors";
 import { checkUserIsAdult } from "../check-user-is-adult";
 
@@ -7,7 +8,7 @@ describe("checkUserIsAdult", () => {
     const result = await checkUserIsAdult({
       birthDate: "1980-01-01",
       fiscalCode: "RSSMRA80A01H501U",
-      referenceDate: new Date("2026-01-01T00:00:00.000Z")
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
     });
 
     expect(result.isOk()).toBe(true);
@@ -23,7 +24,7 @@ describe("checkUserIsAdult", () => {
     const result = await checkUserIsAdult({
       birthDate: "1980-01-01",
       fiscalCode: "RSSMRA81A01H501U",
-      referenceDate: new Date("2026-01-01T00:00:00.000Z")
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
     });
 
     expect(result.isErr()).toBe(true);
@@ -34,7 +35,7 @@ describe("checkUserIsAdult", () => {
 
     expect(result.error).toBeInstanceOf(InvalidUserInputError);
     expect(result.error.message).toBe(
-      "birth_date year does not match the fiscal_code year"
+      "birth_date year does not match the fiscal_code year",
     );
   });
 });

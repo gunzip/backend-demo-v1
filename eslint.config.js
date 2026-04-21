@@ -1,29 +1,4 @@
-import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
+// eslint.config.js
+import pagopa from "@pagopa/eslint-config";
 
-export default tseslint.config(
-  {
-    ignores: ["dist/**", "coverage/**", "node_modules/**"]
-  },
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
-  {
-    files: ["**/*.ts"],
-    languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
-      globals: {
-        ...globals.node
-      }
-    },
-    rules: {
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        {
-          prefer: "type-imports"
-        }
-      ]
-    }
-  }
-);
+export default pagopa;

@@ -1,14 +1,15 @@
 import { okAsync, Result, type ResultAsync } from "neverthrow";
+
 import { BirthDate } from "../domain/birth-date";
-import { FiscalCode } from "../domain/fiscal-code";
 import { InvalidUserInputError } from "../domain/errors";
+import { FiscalCode } from "../domain/fiscal-code";
 import { User } from "../domain/user";
 
-export type CheckUserIsAdultInput = {
-  fiscalCode: string;
+export interface CheckUserIsAdultInput {
   birthDate: string;
+  fiscalCode: string;
   referenceDate?: Date;
-};
+}
 
 function mapInvalidUserInputError(error: unknown): InvalidUserInputError {
   if (error instanceof InvalidUserInputError) {
@@ -51,11 +52,11 @@ export function checkUserIsAdult({
   return createBirthDateResult(birthDate)
     .andThen((parsedBirthDate) =>
       createFiscalCodeResult(fiscalCode).map((normalizedFiscalCode) => ({
-        parsedBirthDate,
         normalizedFiscalCode,
+        parsedBirthDate,
       })),
     )
-    .andThen(({ parsedBirthDate, normalizedFiscalCode }) =>
+    .andThen(({ normalizedFiscalCode, parsedBirthDate }) =>
       createUserResult({
         birthDate: parsedBirthDate,
         fiscalCode: normalizedFiscalCode,

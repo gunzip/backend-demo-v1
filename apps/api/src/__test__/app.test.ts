@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { createApp } from "../app";
 
 describe("adult check route", () => {
@@ -8,12 +9,12 @@ describe("adult check route", () => {
     const response = await app.request("/users/is-adult", {
       body: JSON.stringify({
         birth_date: "1980-01-01",
-        fiscal_code: "RSSMRA80A01H501U"
+        fiscal_code: "RSSMRA80A01H501U",
       }),
       headers: {
-        "content-type": "application/json"
+        "content-type": "application/json",
       },
-      method: "POST"
+      method: "POST",
     });
 
     expect(response.status).toBe(200);
@@ -26,17 +27,17 @@ describe("adult check route", () => {
     const response = await app.request("/users/is-adult", {
       body: JSON.stringify({
         birth_date: "1980-01-01",
-        fiscal_code: "RSSMRA81A01H501U"
+        fiscal_code: "RSSMRA81A01H501U",
       }),
       headers: {
-        "content-type": "application/json"
+        "content-type": "application/json",
       },
-      method: "POST"
+      method: "POST",
     });
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "birth_date year does not match the fiscal_code year"
+      error: "birth_date year does not match the fiscal_code year",
     });
   });
 });

@@ -5,19 +5,29 @@ const BIRTH_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 export class BirthDate {
   readonly value: Date;
 
+  get year(): number {
+    return this.value.getUTCFullYear();
+  }
+
+  get yearTwoDigits(): string {
+    return this.year.toString().slice(-2).padStart(2, "0");
+  }
+
   constructor(rawBirthDate: string) {
     const normalizedBirthDate = rawBirthDate.trim();
 
     if (!BIRTH_DATE_REGEX.test(normalizedBirthDate)) {
       throw new InvalidUserInputError(
-        "birth_date must be a valid date in YYYY-MM-DD format"
+        "birth_date must be a valid date in YYYY-MM-DD format",
       );
     }
 
     const parsedBirthDate = new Date(`${normalizedBirthDate}T00:00:00.000Z`);
 
     if (Number.isNaN(parsedBirthDate.getTime())) {
-      throw new InvalidUserInputError("birth_date must be a real calendar date");
+      throw new InvalidUserInputError(
+        "birth_date must be a real calendar date",
+      );
     }
 
     const [yearPart, monthPart, dayPart] = normalizedBirthDate.split("-");
@@ -30,18 +40,12 @@ export class BirthDate {
       parsedBirthDate.getUTCMonth() + 1 !== expectedMonth ||
       parsedBirthDate.getUTCDate() !== expectedDay
     ) {
-      throw new InvalidUserInputError("birth_date must be a real calendar date");
+      throw new InvalidUserInputError(
+        "birth_date must be a real calendar date",
+      );
     }
 
     this.value = parsedBirthDate;
-  }
-
-  get year(): number {
-    return this.value.getUTCFullYear();
-  }
-
-  get yearTwoDigits(): string {
-    return this.year.toString().slice(-2).padStart(2, "0");
   }
 
   hasReachedBirthday(referenceDate: Date): boolean {
