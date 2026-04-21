@@ -1,5 +1,7 @@
+import type { FiscalCode } from "./fiscal-code";
+
 export type User = {
-  fiscalCode: string;
+  fiscalCode: FiscalCode;
   birthDate: Date;
 };
 

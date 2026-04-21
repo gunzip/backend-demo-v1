@@ -9,13 +9,13 @@ type CliArgs = {
 
 function readRequiredOption(
   args: string[],
-  optionName: "--birth-date" | "--fiscal-code"
+  optionName: "--birth-date" | "--fiscal-code",
 ): string {
   const optionIndex = args.indexOf(optionName);
 
   if (optionIndex === -1 || optionIndex === args.length - 1) {
     throw new Error(
-      `Missing required option ${optionName}. Usage: pnpm start:client -- --fiscal-code RSSMRA80A01H501U --birth-date 1980-01-01`
+      `Missing required option ${optionName}. Usage: pnpm start:client -- --fiscal-code RSSMRA80A01H501U --birth-date 1980-01-01`,
     );
   }
 
@@ -23,7 +23,7 @@ function readRequiredOption(
 
   if (typeof optionValue !== "string" || optionValue.startsWith("--")) {
     throw new Error(
-      `Missing required option ${optionName}. Usage: pnpm start:client -- --fiscal-code RSSMRA80A01H501U --birth-date 1980-01-01`
+      `Missing required option ${optionName}. Usage: pnpm start:client -- --fiscal-code RSSMRA80A01H501U --birth-date 1980-01-01`,
     );
   }
 
@@ -33,7 +33,7 @@ function readRequiredOption(
 function parseCliArgs(args: string[]): CliArgs {
   return {
     birthDate: readRequiredOption(args, "--birth-date"),
-    fiscalCode: readRequiredOption(args, "--fiscal-code")
+    fiscalCode: readRequiredOption(args, "--fiscal-code"),
   };
 }
 
@@ -44,8 +44,8 @@ const client = hc<AppType>(config.apiUrl);
 const response = await client.users["is-adult"].$post({
   json: {
     birth_date: cliArgs.birthDate,
-    fiscal_code: cliArgs.fiscalCode
-  }
+    fiscal_code: cliArgs.fiscalCode,
+  },
 });
 
 if (!response.ok) {
@@ -58,7 +58,9 @@ if (!response.ok) {
       ? errorPayload.error
       : "Unknown API error";
 
-  throw new Error(`Request failed with status ${response.status}: ${errorMessage}`);
+  throw new Error(
+    `Request failed with status ${response.status}: ${errorMessage}`,
+  );
 }
 
 const result = await response.json();

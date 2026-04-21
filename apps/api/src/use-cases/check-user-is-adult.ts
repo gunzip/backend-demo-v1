@@ -1,6 +1,6 @@
 import {
   assertFiscalCodeBirthYearMatches,
-  normalizeFiscalCode
+  FiscalCode
 } from "../domain/fiscal-code";
 import { InvalidUserInputError } from "../domain/errors";
 import { isAdult } from "../domain/user";
@@ -50,7 +50,7 @@ export function checkUserIsAdult({
   referenceDate
 }: CheckUserIsAdultInput): boolean {
   const parsedBirthDate = parseBirthDate(birthDate);
-  const normalizedFiscalCode = normalizeFiscalCode(fiscalCode);
+  const normalizedFiscalCode = new FiscalCode(fiscalCode);
 
   assertFiscalCodeBirthYearMatches(normalizedFiscalCode, parsedBirthDate);
 

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { FiscalCode } from "./fiscal-code";
 import { isAdult } from "./user";
 
 describe("isAdult", () => {
@@ -6,7 +7,7 @@ describe("isAdult", () => {
     const result = isAdult(
       {
         birthDate: new Date("2000-01-01T00:00:00.000Z"),
-        fiscalCode: "RSSMRA00A01H501U"
+        fiscalCode: new FiscalCode("RSSMRA00A01H501U")
       },
       new Date("2026-01-02T00:00:00.000Z")
     );
@@ -18,7 +19,7 @@ describe("isAdult", () => {
     const result = isAdult(
       {
         birthDate: new Date("2010-10-01T00:00:00.000Z"),
-        fiscalCode: "RSSMRA10R01H501U"
+        fiscalCode: new FiscalCode("RSSMRA10R01H501U")
       },
       new Date("2026-01-01T00:00:00.000Z")
     );
