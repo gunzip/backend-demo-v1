@@ -1,0 +1,11 @@
+{
+  "name": "@backend-demo-v1/api",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "@hono/zod-openapi": "^0.19.4",
+    "hono": "^4.7.8",
+    "zod": "^3.24.4"
+  }
+}
