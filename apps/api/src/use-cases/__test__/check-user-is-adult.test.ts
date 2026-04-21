@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { InvalidUserInputError } from "../domain/errors";
-import { checkUserIsAdult } from "./check-user-is-adult";
+import { InvalidUserInputError } from "../../domain/errors";
+import { checkUserIsAdult } from "../check-user-is-adult";
 
 describe("checkUserIsAdult", () => {
   it("returns true when the user is adult and the fiscal code year matches", async () => {

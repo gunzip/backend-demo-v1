@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { InvalidUserInputError } from "./errors";
-import { BirthDate } from "./birth-date";
+import { InvalidUserInputError } from "../errors";
+import { BirthDate } from "../birth-date";
 
 describe("BirthDate", () => {
   it("returns the birth date in canonical format", () => {

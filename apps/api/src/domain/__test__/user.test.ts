@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { BirthDate } from "./birth-date";
-import { FiscalCode } from "./fiscal-code";
-import { User } from "./user";
+import { BirthDate } from "../birth-date";
+import { FiscalCode } from "../fiscal-code";
+import { User } from "../user";
 
 describe("User.isAdult", () => {
   it("returns true when the user is already 18", () => {

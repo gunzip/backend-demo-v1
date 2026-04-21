@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createApp } from "./app";
+import { createApp } from "../app";
 
 describe("adult check route", () => {
   it("returns the boolean result for a valid request", async () => {

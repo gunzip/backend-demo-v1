@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { BirthDate } from "./birth-date";
-import { InvalidUserInputError } from "./errors";
-import { FiscalCode } from "./fiscal-code";
+import { BirthDate } from "../birth-date";
+import { InvalidUserInputError } from "../errors";
+import { FiscalCode } from "../fiscal-code";
 
 describe("FiscalCode", () => {
   it("returns the fiscal code in canonical format", () => {
