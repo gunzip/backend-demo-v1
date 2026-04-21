@@ -14,3 +14,5 @@
   dall'adapter in oggetti del dominio
 - non servono wrapper per convertire i dati validati dall'adapter in oggetti del
   dominio, perché l'input dello use case è un semplice DTO
+- i tipi Error custom utilizzano la property `name` per identificare il tipo di errore; questo evita che venga
+  stampato un errore generico "Error: ..." quando viene lanciato un errore custom
