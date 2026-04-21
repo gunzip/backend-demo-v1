@@ -1,7 +1,7 @@
 - approccio code first: i validatori dell'adapter definiscono le openapi
   (generate dal codice a runtime)
-- il client condivide le route (e quindi i tipi) con l'adapter e non viene
-  quindi generato dalle specifiche
+- il client condivide le route (e quindi i tipi) con l'adapter; non serve generare
+  codice o tipi typescript
 - la validazione dell'adapter avviene indipendentemente da quella del dominio
 - il dominio effettua una sua validazione, totalmente indipendente da quella
   dell'adapter; nell'esempio non usa zod (ma potrebbe)
