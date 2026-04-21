@@ -38,6 +38,20 @@ const ProblemDetailsSchema = z
   })
   .openapi("ProblemDetails");
 
+const ValidationErrorSchema = ProblemDetailsSchema.extend({
+  errors: z
+    .array(
+      z.object({
+        code: z.string().openapi({ example: "invalid_string" }),
+        message: z.string().openapi({ example: "Invalid input" }),
+        path: z
+          .array(z.union([z.string(), z.number()]))
+          .openapi({ example: ["body", "birth_date"] }),
+      }),
+    )
+    .openapi({ example: [] }),
+}).openapi("ValidationError");
+
 export const checkUserIsAdultRoute = createRoute({
   method: "post",
   path: "/users/is-adult",
@@ -61,6 +75,14 @@ export const checkUserIsAdultRoute = createRoute({
         },
       },
       description: "Whether the user is an adult",
+    },
+    400: {
+      content: {
+        "application/problem+json": {
+          schema: ValidationErrorSchema,
+        },
+      },
+      description: "Request body validation failed",
     },
     422: {
       content: {
