@@ -18,6 +18,7 @@
 
 ## Contro
 
+- se si sceglie un client diverso da quello fornito dal framework, deve supportare lo stesso formato per lo schema delle route
 - l'espressività delle openapi è limitata dalla bontà del framework utilizzato
 - è possibile che parti della validazioni siano duplicate
 
