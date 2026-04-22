@@ -9,14 +9,20 @@
     },
     {
       "id": 2,
-      "prompt": "Create a local characterization test workflow for a legacy Express endpoint that will be ported to Hono. The endpoint calls two REST services and an Azure SDK that uses HTTP under the hood. Generate or update the test so the current Express implementation records outbound interactions once, persists cassettes, and later replays them unchanged while validating the Hono port.",
-      "expected_output": "The agent chooses an in-process HTTP driver plus persistent record/replay for same-process HTTP dependencies, normalizes volatile fields, and locks the test into replay mode after the first capture.",
+      "prompt": "Create a local characterization test workflow for a legacy Express endpoint that will be ported to Hono. The endpoint calls two REST services and writes through an SDK to a stateful dependency such as Blob Storage, Cosmos DB, or Redis. Generate or update the test so the current Express implementation records outbound HTTP interactions once, persists cassettes, and later replays them unchanged while validating the Hono port. For the stateful dependency, verify the real side effect locally with Testcontainers instead of spying on the SDK.",
+      "expected_output": "The agent chooses an in-process HTTP driver plus persistent record/replay for same-process HTTP dependencies, normalizes volatile fields, runs the stateful dependency locally with Testcontainers, and asserts the actual persisted side effect rather than SDK invocation details.",
       "files": []
     },
     {
       "id": 3,
-      "prompt": "Generate a local test for an Azure Function that receives HTTP input, calls an external REST API, and emits a Service Bus message through an output binding. The test must validate a refactor without running Azure Functions Core Tools. Record only the REST interaction, assert the binding payload directly, and keep the loop fast for local coding agents.",
-      "expected_output": "The agent invokes the handler directly, records only the REST dependency, asserts the output binding payload instead of trying to intercept Service Bus traffic, and keeps the verification fully local.",
+      "prompt": "Generate a local test for an Azure Function that receives HTTP input, calls an external REST API, and emits a Service Bus message through an output binding. The test must validate a refactor without running Azure Functions Core Tools. Record only the REST interaction, assert the binding payload directly because the runtime owns that side effect, and keep the loop fast for local coding agents.",
+      "expected_output": "The agent invokes the handler directly, records only the REST dependency, keeps the Service Bus verification at the output-binding payload boundary because it is runtime-managed rather than SDK-managed, and keeps the verification fully local.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Build a refactor-safety test for a Fastify handler that accepts an HTTP request, calls a partner REST API, writes a receipt to Blob Storage, and publishes a follow-up event through a Service Bus SDK client. Keep the HTTP front door stable across a future framework migration, use record/replay only where it belongs, and prove the storage and queue side effects without spying on the SDK clients.",
+      "expected_output": "The agent drives the real HTTP boundary locally, records and replays the partner REST dependency, starts the storage and messaging dependencies with Testcontainers or supported local emulators, and asserts the actual blob contents and queued message from those services.",
       "files": []
     }
   ]

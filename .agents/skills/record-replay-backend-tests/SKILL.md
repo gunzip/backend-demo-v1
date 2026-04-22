@@ -1,6 +1,6 @@
 ---
 name: record-replay-backend-tests
-description: Create or update local characterization and integration tests for Node.js or TypeScript backends that must preserve behavior across refactors, framework migrations, or legacy cleanup using record/replay plus observable side-effect assertions. Use this whenever the user wants to freeze current backend behavior, add golden master or VCR-style tests, compare Express/Hono/Fastify/Azure Function implementations, validate refactors locally, or keep cloud-heavy integrations testable without emulating the full infrastructure.
+description: Create or update local characterization and integration tests for Node.js or TypeScript backends that must preserve behavior across refactors, framework migrations, or legacy cleanup using record/replay at HTTP boundaries and Testcontainers-backed verification of real PaaS side effects. Use this whenever the user wants to freeze current backend behavior, add golden master or VCR-style tests, compare Express/Hono/Fastify/Azure Function implementations, validate refactors locally, or keep cloud-heavy integrations testable while still proving real writes to storage, Cosmos DB, Redis, Service Bus, or similar services.
 ---
 
 # Record & Replay Backend Tests
@@ -12,7 +12,7 @@ Use this skill to build fast local characterization tests that freeze observable
 Produce or update:
 
 - one or more characterization/integration tests that execute the real adapter in-process, preferably through a framework-agnostic HTTP harness when the refactor may swap HTTP frameworks
-- any cassette/recording or mock helpers needed to replay outbound dependencies locally
+- any cassette/recording helpers for outbound HTTP dependencies plus any Testcontainers setup needed to verify real local side effects for stateful services
 - a short final note explaining what was frozen, how replay works, and how to rerun the verification
 
 ## First inspect
@@ -23,9 +23,10 @@ Produce or update:
    - Azure Function or other serverless handler
    - queue/topic/event handler
 3. Classify outbound dependencies:
-   - HTTP/HTTPS traffic emitted by the same Node process
-   - runtime-managed bindings or host-managed side effects
-   - non-HTTP SDKs or protocols such as AMQP, Redis TCP, or gRPC internals
+    - HTTP/HTTPS traffic emitted by the same Node process
+    - runtime-managed bindings or host-managed side effects
+    - stateful PaaS data-plane dependencies that can be exercised locally via Testcontainers, such as blob/object storage, Cosmos-compatible stores, Redis, brokers, or queues
+    - non-HTTP protocols with no viable local container or emulator
 4. Find contract sources: OpenAPI, schema validators, existing fixtures, known regressions.
 5. Freeze nondeterminism before recording anything: time, random IDs, env-driven values, volatile headers.
 
@@ -61,7 +62,12 @@ Use record/replay at the network boundary.
 
 ### Azure SDKs that ultimately speak HTTP from the same process
 
-Treat them like HTTP clients, but normalize volatile fields before persisting recordings:
+Split these by contract boundary:
+
+- if the SDK is just another way of calling a web service whose request/response contract you want to freeze, treat it like HTTP and normalize volatile fields before persisting recordings
+- if the SDK targets a stateful PaaS dependency where the real contract is the stored document/blob/key/message, prefer Testcontainers and assert the resulting state instead of the SDK call arguments
+
+For the record/replay cases, normalize volatile fields before persisting recordings:
 
 - auth headers
 - timestamps
@@ -78,32 +84,49 @@ Do not try to sniff sockets or emulate the host. Assert the serialized payload t
 - returned queue/event payloads
 - framework-specific output envelope objects
 
-### Non-HTTP protocols or SDKs that are hard to intercept reliably
+### Stateful PaaS dependencies reachable through SDKs
 
-Use module-level mocks or spies at the SDK boundary. Register mocks before importing the subject under test when legacy code instantiates clients at module load time. In Vitest, prefer `vi.mock(...)` at the top of the test file or a dynamic import after the mock is set up.
+Prefer Testcontainers-backed local verification over SDK spies.
+
+- Start the smallest viable local service or emulator for the dependency.
+- Inject the connection string, endpoint, or credentials the app already expects.
+- Seed only the minimum state required for the scenario.
+- After the request or handler completes, assert the actual side effect by querying the containerized service:
+  - read the blob or object payload from storage
+  - query the inserted or updated document
+  - fetch the Redis value, TTL, or pub/sub result that matters
+  - receive the queued message from the broker or queue
+- Reset or isolate container state between tests so replayed HTTP behavior stays deterministic.
+
+### Non-HTTP protocols with no viable local container or emulator
+
+Avoid SDK spies by default. Only fall back to an SDK-boundary seam when the runtime owns the side effect or there is no credible local service/emulator to assert against, and explain why that exception is necessary.
 
 ### Mixed dependencies
 
 Combine techniques in one test:
 
 - record/replay for HTTP calls
-- mocks/spies for non-HTTP SDKs or host-managed outputs
+- Testcontainers for stateful service side effects
+- direct assertions for host-managed outputs
 
 ## Implementation workflow
 
 1. Start from the current implementation, not the refactor target.
 2. Pick one representative request or message shape from OpenAPI, schema examples, or existing fixtures.
 3. For HTTP services on Node, prefer a shared server/listener factory plus Supertest so the same test can survive a framework swap with minimal edits.
-4. Write a characterization test that asserts:
+4. Identify the smallest container topology needed for non-HTTP stateful dependencies and wire it through the same env/config path production code already uses.
+5. Write a characterization test that asserts:
    - final status/result
    - stable headers or metadata that matter
    - response/body payload
    - observable side effects at the correct boundary
-5. If outbound HTTP exists, add record mode and generate the first cassette from the current implementation.
-6. Immediately add replay/lockdown behavior so future runs fail instead of silently re-recording.
-7. Keep assertions at the external contract level. Do not overfit to internal helper calls unless that helper call is itself the contract boundary.
-8. Run the test, then use it unchanged against the refactored implementation.
-9. Do not update cassettes during refactor validation unless the behavior change is intentional and agreed.
+   - real persisted state for storage, document stores, caches, or brokers when those are part of the contract
+6. If outbound HTTP exists, add record mode and generate the first cassette from the current implementation.
+7. Immediately add replay/lockdown behavior so future runs fail instead of silently re-recording.
+8. Keep assertions at the external contract level. Do not overfit to internal helper calls or SDK invocation details when the real contract is the data now present in the backing service.
+9. Run the test, then use it unchanged against the refactored implementation.
+10. Do not update cassettes during refactor validation unless the behavior change is intentional and agreed.
 
 ## What to freeze
 
@@ -112,7 +135,7 @@ Freeze what a client or adjacent system can observe:
 - HTTP response status, headers, and body
 - normalized outbound HTTP request shape
 - queue or topic payloads
-- stored document/blob payloads at the SDK boundary
+- stored document/blob/cache/message state as read back from the local service or emulator
 - emitted domain-event payloads
 
 Do not freeze irrelevant noise:
@@ -129,7 +152,8 @@ Do not freeze irrelevant noise:
 - If the selected scenario has no outbound dependency, do not invent record/replay machinery just because the pattern can support it.
 - Keep recordings small and reviewable.
 - Redact secrets before persisting any cassette.
-- If legacy code is tightly coupled, mock the imported SDK module rather than refactoring production code first.
+- Prefer Testcontainers over SDK spies for stateful PaaS dependencies; if you must fall back, document why the real side effect cannot be exercised locally.
+- Keep the container topology minimal and cheap enough for local iteration.
 - If the refactor changes only framework plumbing, the characterization test should stay the same or need only minimal entrypoint changes.
 
 ## Final response
@@ -137,7 +161,7 @@ Do not freeze irrelevant noise:
 When you finish, briefly state:
 
 - which surface was tested
-- which dependencies used record/replay vs mocks/spies
+- which dependencies used record/replay vs Testcontainers vs direct runtime-output assertions
 - which files were added or changed
 - how to rerun the local verification
 
@@ -145,12 +169,12 @@ When you finish, briefly state:
 
 **Example 1**
 Input: "Migrate this Express endpoint to Hono without breaking behavior. It calls two REST services and writes to Cosmos."
-Output shape: "Add a characterization test, record outbound HTTP on the current Express version, normalize volatile fields, then replay the cassette unchanged while validating the Hono port."
+Output shape: "Add a characterization test, record outbound HTTP on the current Express version, start the local Cosmos-compatible container or emulator with Testcontainers, then replay the cassette unchanged while asserting the stored document through the database itself during Hono validation."
 
 **Example 2**
 Input: "Freeze this Azure Function before I refactor it. It calls a REST API and emits a Service Bus message."
 Output shape: "Invoke the handler directly, record only the REST call, assert the emitted binding/message payload, and avoid running the Functions host."
 
 **Example 3**
-Input: "Add refactor-safety tests to this Hono service in the current monorepo."
-Output shape: "Use Supertest against a shared Node HTTP adapter or server factory, assert the real HTTP contract, and only introduce cassettes if the chosen scenario actually crosses an outbound process boundary."
+Input: "Add refactor-safety tests to this Hono service in the current monorepo. It calls a partner REST API and caches the result in Redis."
+Output shape: "Use Supertest against a shared Node HTTP adapter or server factory, record and replay the partner HTTP call, run Redis in Testcontainers, and assert the real cached key/value rather than spying on the Redis client."
