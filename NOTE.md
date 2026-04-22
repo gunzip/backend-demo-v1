@@ -16,9 +16,8 @@
 - I tipi Error personalizzati utilizzano la property `name` per identificare il tipo; questo evita che venga
   stampato un errore generico "Error: ..." quando viene lanciato un errore custom
 
-## Contro
+## Contro di Qualsiasi Approccio Code First
 
 - se si sceglie un client diverso da quello fornito dal framework, deve supportare lo stesso formato per lo schema delle route
 - l'espressività delle openapi è limitata dalla bontà del framework utilizzato
 - è possibile che parti della validazioni siano duplicate
-
