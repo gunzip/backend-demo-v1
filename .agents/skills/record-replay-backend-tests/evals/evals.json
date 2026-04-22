@@ -1,0 +1,23 @@
+{
+  "skill_name": "record-replay-backend-tests",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In this Nx monorepo, add a characterization integration test for `apps/api/src/app.ts` that freezes the behavior of `POST /users/is-adult` before future framework plumbing changes. Use the existing Vitest setup and the Hono app instance in-process; do not start a server. If the chosen scenario has no outbound dependency to record, keep the test simple and explain why record/replay is unnecessary for that case.",
+      "expected_output": "The agent adds or updates a Vitest test using the Hono app instance directly, freezes the HTTP contract for representative cases, and avoids forcing cassettes when the scenario has no outbound process-boundary dependency.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create a local characterization test workflow for a legacy Express endpoint that will be ported to Hono. The endpoint calls two REST services and an Azure SDK that uses HTTP under the hood. Generate or update the test so the current Express implementation records outbound interactions once, persists cassettes, and later replays them unchanged while validating the Hono port.",
+      "expected_output": "The agent chooses an in-process HTTP driver plus persistent record/replay for same-process HTTP dependencies, normalizes volatile fields, and locks the test into replay mode after the first capture.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Generate a local test for an Azure Function that receives HTTP input, calls an external REST API, and emits a Service Bus message through an output binding. The test must validate a refactor without running Azure Functions Core Tools. Record only the REST interaction, assert the binding payload directly, and keep the loop fast for local coding agents.",
+      "expected_output": "The agent invokes the handler directly, records only the REST dependency, asserts the output binding payload instead of trying to intercept Service Bus traffic, and keeps the verification fully local.",
+      "files": []
+    }
+  ]
+}
