@@ -10,7 +10,7 @@
   al netto di casi particolari, è meglio se non lo fa, perché così è certo che se il dominio cambia, l'adapter non ne risente.
 - L'input dello use case è un semplice DTO: questo permette di non dover scrivere logiche complesse (wrapper) per convertire
   i dati validati dall'adapter in oggetti del dominio. L'obiettivo, nel design dei parametri per gli use-case, è massimizzare
-  la developer experience per i caller (adapter), non quindi avere una validazione "strict".
+  la developer experience per i caller (adapter), non quindi avere una validazione "strict" che avvnerrà al loro interno.
 - Use case e adapter sono privi di asserzioni sui tipi, la maggior parte dei quali vengono inferiti automaticamente.
 - Vengono impiegati i meccanismi builtin del framework http per validare i parametri di path, query e header.
 - I tipi Error personalizzati utilizzano la property `name` per identificare il tipo; questo evita che venga
