@@ -3,8 +3,8 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "In this Nx monorepo, add a characterization integration test for `apps/api/src/app.ts` that freezes the behavior of `POST /users/is-adult` before future framework plumbing changes. Use the existing Vitest setup and the Hono app instance in-process; do not start a server. If the chosen scenario has no outbound dependency to record, keep the test simple and explain why record/replay is unnecessary for that case.",
-      "expected_output": "The agent adds or updates a Vitest test using the Hono app instance directly, freezes the HTTP contract for representative cases, and avoids forcing cassettes when the scenario has no outbound process-boundary dependency.",
+      "prompt": "In this Nx monorepo, add a characterization integration test for the HTTP API that freezes the behavior of `POST /users/is-adult` before future framework plumbing changes. Use the existing Vitest setup plus a framework-agnostic HTTP harness such as Supertest against the real Node adapter/listener; do not bind a long-lived port. If the chosen scenario has no outbound dependency to record, keep the test simple and explain why record/replay is unnecessary for that case.",
+      "expected_output": "The agent adds or updates a Vitest test that drives the real HTTP boundary through a shared Node adapter or server factory, freezes the HTTP contract for representative cases, and avoids forcing cassettes when the scenario has no outbound process-boundary dependency.",
       "files": []
     },
     {

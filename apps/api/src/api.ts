@@ -1,16 +1,9 @@
-import { serve } from "@hono/node-server";
-
-import { app } from "./app";
 import { loadApiConfig } from "./config";
+import { createServer } from "./server";
 
 const config = loadApiConfig(process.env);
+const server = createServer();
 
-serve(
-  {
-    fetch: app.fetch,
-    port: config.port,
-  },
-  (info) => {
-    console.log(`API listening on http://localhost:${info.port}`);
-  },
-);
+server.listen(config.port, () => {
+  console.log(`API listening on http://localhost:${config.port}`);
+});

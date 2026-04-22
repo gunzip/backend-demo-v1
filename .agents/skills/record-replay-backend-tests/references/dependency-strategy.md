@@ -6,8 +6,8 @@ Use this reference when the right testing boundary is not obvious.
 
 | Surface | Preferred driver | Why |
 | --- | --- | --- |
-| Hono / OpenAPIHono app instance | `app.request(...)` | Fastest in-process HTTP contract test without opening a port |
-| Express / Fastify / similar app object | framework injection or Supertest | Exercises the real adapter while keeping the loop local |
+| Hono / OpenAPIHono app instance | Supertest against a shared Node adapter/request listener; fall back to `app.request(...)` only if no stable Node HTTP boundary exists | Keeps the test pinned to an HTTP boundary that can survive framework swaps |
+| Express / Fastify / similar app object | Supertest against the real callback/server boundary, or framework injection when it targets the same boundary | Exercises the real adapter while keeping the loop local |
 | Azure Function HTTP trigger | direct handler invocation with crafted request/context | The Functions host owns the HTTP server, so Supertest is not the natural boundary |
 | Queue/topic/event handler | direct invocation with message/context | Keeps the test focused on the handler contract instead of host startup |
 
@@ -44,19 +44,23 @@ const { handler } = await import("../handler");
 ## Hono example
 
 ```ts
-const app = createApp();
+import request from "supertest";
+import { createAdaptorServer } from "@hono/node-server";
 
-const response = await app.request("/users/is-adult", {
-  method: "POST",
-  headers: {
-    "content-type": "application/json",
-  },
-  body: JSON.stringify({
+const server = createAdaptorServer({
+  fetch: createApp().fetch,
+});
+
+const response = await request(server)
+  .post("/users/is-adult")
+  .set("content-type", "application/json")
+  .send({
     fiscal_code: "RSSMRA80A01H501U",
     birth_date: "1980-01-01",
-  }),
-});
+  });
 ```
+
+If the runtime already exposes a `createServer()` or request-listener factory, prefer that over instantiating the framework app directly in the test.
 
 ## Replay safety checklist
 

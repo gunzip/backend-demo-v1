@@ -11,7 +11,7 @@ Use this skill to build fast local characterization tests that freeze observable
 
 Produce or update:
 
-- one or more characterization/integration tests that execute the real adapter in-process
+- one or more characterization/integration tests that execute the real adapter in-process, preferably through a framework-agnostic HTTP harness when the refactor may swap HTTP frameworks
 - any cassette/recording or mock helpers needed to replay outbound dependencies locally
 - a short final note explaining what was frozen, how replay works, and how to rerun the verification
 
@@ -32,14 +32,15 @@ Produce or update:
 ## Choose the inbound driver
 
 Prefer the smallest in-process entrypoint that still exercises the real adapter.
+If the refactor may replace the current HTTP framework, prefer a harness that targets a stable transport boundary rather than a framework-owned test helper.
 
 ### Hono or fetch-style apps
 
-Use `app.request(...)` or the equivalent in-process request helper. Do not open a real port unless the codebase gives you no other safe option.
+Do not default to `app.request(...)` just because it exists. If the service runs on Node, prefer Supertest against a shared Node-compatible server, request listener, or app callback that can stay stable across framework swaps. Reuse an existing `createServer()` or listener factory when the codebase has one; otherwise, extract a thin factory around the real runtime adapter and use that in both production bootstrap and tests. Fall back to `app.request(...)` only when there is no stable Node HTTP boundary to target or the runtime is not Node, and say why.
 
 ### Express, Fastify, or similar HTTP apps
 
-Use the framework's in-memory injection if it exists; otherwise use Supertest against the app object, not a long-lived localhost server.
+Prefer Supertest against the real HTTP callback/server boundary when the goal is adapter portability. Framework injection is fine when it already targets the same stable boundary you expect to preserve. Do not start a long-lived localhost server unless the codebase gives you no other safe option.
 
 ### Azure Functions or serverless handlers
 
@@ -92,16 +93,17 @@ Combine techniques in one test:
 
 1. Start from the current implementation, not the refactor target.
 2. Pick one representative request or message shape from OpenAPI, schema examples, or existing fixtures.
-3. Write a characterization test that asserts:
+3. For HTTP services on Node, prefer a shared server/listener factory plus Supertest so the same test can survive a framework swap with minimal edits.
+4. Write a characterization test that asserts:
    - final status/result
    - stable headers or metadata that matter
    - response/body payload
    - observable side effects at the correct boundary
-4. If outbound HTTP exists, add record mode and generate the first cassette from the current implementation.
-5. Immediately add replay/lockdown behavior so future runs fail instead of silently re-recording.
-6. Keep assertions at the external contract level. Do not overfit to internal helper calls unless that helper call is itself the contract boundary.
-7. Run the test, then use it unchanged against the refactored implementation.
-8. Do not update cassettes during refactor validation unless the behavior change is intentional and agreed.
+5. If outbound HTTP exists, add record mode and generate the first cassette from the current implementation.
+6. Immediately add replay/lockdown behavior so future runs fail instead of silently re-recording.
+7. Keep assertions at the external contract level. Do not overfit to internal helper calls unless that helper call is itself the contract boundary.
+8. Run the test, then use it unchanged against the refactored implementation.
+9. Do not update cassettes during refactor validation unless the behavior change is intentional and agreed.
 
 ## What to freeze
 
@@ -123,6 +125,7 @@ Do not freeze irrelevant noise:
 ## Guardrails
 
 - Prefer local, in-process execution over booting hosts or opening ports.
+- Avoid framework-owned request helpers when the goal is to survive HTTP framework or adapter refactors and a stable Node HTTP boundary is available.
 - If the selected scenario has no outbound dependency, do not invent record/replay machinery just because the pattern can support it.
 - Keep recordings small and reviewable.
 - Redact secrets before persisting any cassette.
@@ -150,4 +153,4 @@ Output shape: "Invoke the handler directly, record only the REST call, assert th
 
 **Example 3**
 Input: "Add refactor-safety tests to this Hono service in the current monorepo."
-Output shape: "Use the app instance in-process with Vitest, assert the real HTTP contract, and only introduce cassettes if the chosen scenario actually crosses an outbound process boundary."
+Output shape: "Use Supertest against a shared Node HTTP adapter or server factory, assert the real HTTP contract, and only introduce cassettes if the chosen scenario actually crosses an outbound process boundary."
