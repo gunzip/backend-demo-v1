@@ -1,7 +1,7 @@
 ## Esempio con Approccio Code First
 
 - Gli adapter definiscono le OpenAPI (generate dal codice a runtime) tramite schemi Zod (usati per validare le request / response).
-- Il client condivide le route delle OpenAPI (e quindi i tipi e gli schemi runtime) con gli adapter: non viene generato codice né tipi TypeScript.
+- Il client condivide con gli adapter le route delle OpenAPI (e quindi i tipi e gli schemi runtime): non viene generato codice né tipi TypeScript.
 - La validazione dell'adapter avviene indipendentemente da quella del dominio.
 - La validazione del dominio avviene indipendentemente da quella dell'adapter.
 - La validazione del dominio non usa Zod (ma è concesso).
