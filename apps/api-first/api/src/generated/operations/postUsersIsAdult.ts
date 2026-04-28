@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Hono } from "hono";
 
-import { postUsersIsAdultHandler } from "../../handlers/postUsersIsAdult.js";
+import { postUsersIsAdultHandler } from "../../adapters/http/postUsersIsAdult.js";
 import type { GeneratedOperationHandler, GeneratedOperationInput } from "../../runtime/operation-types.js";
 import { validationHook } from "../../runtime/http-problem-details.js";
 import { serverRoute as postUsersIsAdultServerRoute } from "../../../generated/routes/postUsersIsAdult.js";

@@ -60,7 +60,7 @@ export async function generateHonoServer({
     "generated",
     "register-routes.ts",
   );
-  const handlersDirPath = path.join(projectRoot, "src", "handlers");
+  const httpAdaptersDirPath = path.join(projectRoot, "src", "adapters", "http");
 
   const operations = await loadOperations(generatedRoutesDirPath);
 
@@ -69,7 +69,7 @@ export async function generateHonoServer({
   await mkdir(path.dirname(generatedRegisterRoutesFilePath), {
     recursive: true,
   });
-  await mkdir(handlersDirPath, { recursive: true });
+  await mkdir(httpAdaptersDirPath, { recursive: true });
 
   for (const operation of operations) {
     const generatedOperationFilePath = path.join(
@@ -77,7 +77,7 @@ export async function generateHonoServer({
       `${operation.moduleBasename}.ts`,
     );
     const handlerFilePath = path.join(
-      handlersDirPath,
+      httpAdaptersDirPath,
       `${operation.moduleBasename}.ts`,
     );
 
@@ -110,7 +110,7 @@ function buildGeneratedOperationFile(operation: OperationDefinition) {
     'import { zValidator } from "@hono/zod-validator";',
     'import type { Hono } from "hono";',
     "",
-    `import { ${operation.handlerExportName} } from "../../handlers/${operation.moduleBasename}.js";`,
+    `import { ${operation.handlerExportName} } from "../../adapters/http/${operation.moduleBasename}.js";`,
     'import type { GeneratedOperationHandler, GeneratedOperationInput } from "../../runtime/operation-types.js";',
     'import { validationHook } from "../../runtime/http-problem-details.js";',
     `import { serverRoute as ${routeIdentifier} } from "${operation.routeImportPath}";`,
@@ -134,14 +134,38 @@ function buildGeneratedOperationFile(operation: OperationDefinition) {
 
 function buildHandlerStub(operation: OperationDefinition) {
   const handlerTypeName = `${toPascalCase(operation.moduleBasename)}Handler`;
+  const handlerInputTypeName = `${toPascalCase(operation.moduleBasename)}HandlerInput`;
+  const mapperPrefix = toPascalCase(operation.moduleBasename);
 
   return [
-    'import { notImplemented } from "../runtime/http-problem-details.js";',
-    `import type { ${handlerTypeName} } from "../generated/operations/${operation.moduleBasename}.js";`,
+    'import { notImplemented } from "../../runtime/http-problem-details.js";',
+    `import type { ${handlerInputTypeName}, ${handlerTypeName} } from "../../generated/operations/${operation.moduleBasename}.js";`,
     "",
-    "// Replace this stub with a wrapper around your use-case. The input is already validated.",
-    `export const ${operation.handlerExportName}: ${handlerTypeName} = async () =>`,
-    `  notImplemented(${toLiteral(operation.operationId)});`,
+    "// Colocate inbound/outbound mapping helpers in this module so the use-case stays protocol-agnostic.",
+    `export const ${operation.handlerExportName}: ${handlerTypeName} = async (input) => {`,
+    `  const useCaseInput = map${mapperPrefix}Input(input);`,
+    `  const mappedResponse = map${mapperPrefix}Result(useCaseInput);`,
+    "",
+    `  return to${mapperPrefix}Response(mappedResponse);`,
+    "};",
+    "",
+    `function map${mapperPrefix}Input(`,
+    `  _input: ${handlerInputTypeName},`,
+    ") {",
+    `  return ${toLiteral(operation.operationId)};`,
+    "}",
+    "",
+    `function map${mapperPrefix}Result(`,
+    `  _result: ReturnType<typeof map${mapperPrefix}Input>,`,
+    ") {",
+    "  return undefined;",
+    "}",
+    "",
+    `function to${mapperPrefix}Response(`,
+    `  _response: ReturnType<typeof map${mapperPrefix}Result>,`,
+    ") {",
+    `  return notImplemented(${toLiteral(operation.operationId)});`,
+    "}",
     "",
   ].join("\n");
 }

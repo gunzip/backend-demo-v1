@@ -1,6 +1,18 @@
 import type { Context, Env, TypedResponse } from "hono";
+import type { StatusCode } from "hono/utils/http-status";
+import type { JSONParsed } from "hono/utils/types";
 import type { ZodTypeAny } from "zod";
 import type * as z from "zod";
+
+export type GeneratedHttpResponse<TRouteResponse> = TRouteResponse extends {
+  data: infer TData;
+  status: infer TStatus extends string;
+}
+  ? Response &
+      TypedResponse<JSONParsed<TData>, StatusCodeFromString<TStatus>, "json">
+  : TRouteResponse extends { status: string }
+    ? Response
+    : never;
 
 export type GeneratedOperationHandler<
   TRoute extends GeneratedServerRoute,
@@ -87,3 +99,6 @@ type MaybeProperty<TKey extends string, TValue> = [TValue] extends [never]
 type Simplify<TValue> = Record<never, never> & {
   [TKey in keyof TValue]: TValue[TKey];
 };
+
+type StatusCodeFromString<TStatus extends string> =
+  TStatus extends `${infer TCode extends StatusCode}` ? TCode : never;

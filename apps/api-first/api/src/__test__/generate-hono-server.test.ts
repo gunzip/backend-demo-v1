@@ -11,7 +11,8 @@ describe("generateHonoServer", () => {
     const handlerFilePath = path.join(
       apiProjectRoot,
       "src",
-      "handlers",
+      "adapters",
+      "http",
       "postUsersIsAdult.ts",
     );
     const originalHandlerSource = await readFile(handlerFilePath, "utf8");
@@ -39,7 +40,8 @@ describe("generateHonoServer", () => {
     const generatedHandlerFilePath = path.join(
       apiProjectRoot,
       "src",
-      "handlers",
+      "adapters",
+      "http",
       "getUserPets.ts",
     );
     const generatedOperationFilePath = path.join(
@@ -89,6 +91,9 @@ describe("generateHonoServer", () => {
         "utf8",
       );
 
+      expect(generatedOperationSource).toContain(
+        'import { getUserPetsHandler } from "../../adapters/http/getUserPets.js";',
+      );
       expect(generatedOperationSource).toContain(
         'zValidator("param", getUserPetsServerRoute.params.shape.path, validationHook)',
       );

@@ -21,3 +21,14 @@
 - se si sceglie un client diverso da quello fornito dal framework, deve supportare lo stesso formato per lo schema delle route
 - l'espressività delle openapi è limitata dalla bontà del framework utilizzato
 - è possibile che parti della validazioni siano duplicate
+
+## Esempio di approccio API First
+
+- il swe scrive solo l'implementazione di dominio, con una sua validazione indipendente da quella dell'adapter
+- l'adapter e il boilerplate del server è generato a partire da un file OpenAPI scritto a mano
+- nel server
+  - le request sono validate a runtime e automaticamente aderenti alle OpenAPI
+  - le response sono validate a compile time
+- nel client
+  - le request sono validate a compile time e automaticamente aderenti alle OpenAPI
+  - le response sono validate a runtime
