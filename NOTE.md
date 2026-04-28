@@ -32,15 +32,14 @@ Nella scrittura dall'adapter il SWE implementa:
 
 Vantaggi:
 
-- Chi scrive l'adapter non deve preoccuparsi di cosa e come fa lo use case, ma solo di come mappare i dati in ingresso e in uscita.
-- Gli input sono aderenti alle OpenAPI con un check a runtime per le request e a compile time per le response.
+- Chi scrive l'adapter non deve preoccuparsi di cosa fa lo use case (e come), ma solo di come mappare i dati in ingresso e in uscita.
+- Gli input sono perfettamente aderenti alle OpenAPI con un check a runtime per le request e a compile time per le response.
 - Il dominio non deve preoccuparsi di come sono strutturati i dati in ingresso e in uscita nell'adapter
-- La logica implementata nell'adapter non richiede ragionamenti particolari (es. "devo usare uno degli schemi già disponibili? su quali campi ù
-  esattamente?"), ma è solo un mapping tra dati già validati e quello che si aspetta lo use case. Questo permette ai coding agent di generare
-  l'adapter in modo più efficace, senza dover ragionare su logiche complesse o discrezionali che richiedono ulteriore contesto.
+- La logica implementata nell'adapter non richiede ragionamenti particolari (es. "devo usare uno degli schemi già disponibili? quali e su quali campi
+  esattamente?"), ma è solo un banale mapping. Questo permette ai coding agent di generare l'adapter in modo efficace, senza dover ragionare su logiche complesse o discrezionali che richiedono ulteriore contesto.
 
 Nota: la soluzione proposta in letteratura per controllare che un input che è accettato dall'adapter sia coerente
-con le aspettative della logica business, è quella di implementare dei test che partono dall'adapter e arrivano al dominio.
+con _tutte_ le aspettative della logica business, è quella di implementare dei test che partono dall'adapter e arrivano al dominio.
 Questo è imprescindibile in qualsiasi scenario, considerando che le logiche interne del dominio sono inerentemente
 più complesse di quelle dell'adapter (es. potrebbero coinvolgere chiamate ad altri servizi, validazione sulla semantica,
 accesso a layer di persistenza, etc).
