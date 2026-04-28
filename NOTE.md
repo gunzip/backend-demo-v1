@@ -30,7 +30,14 @@ Nella scrittura dall'adapter il SWE implementa:
 - il mapping tra i dati dallo use case e quelli che si aspettano le OpenAPI (con response validate a compile time)
 - la chiamata allo use-case
 
-vantaggi:
+Vantaggi:
 
 - Chi scrive l'adapter non deve preoccuparsi di cosa e come fa lo use case, ma solo di come mappare i dati in ingresso e in uscita.
 - Gli input sono aderenti alle OpenAPI con un check a runtime per le request e a compile time per le response.
+- Il dominio non deve preoccuparsi di come sono strutturati i dati in ingresso e in uscita nell'adapter
+
+Nota: la soluzione proposta in letteratura per controllare che un input che è accettato dall'adapter sia coerente
+con le aspettative della logica business, è quella di implementare dei test che partono dall'adapter e arrivano al dominio.
+Questo è imprescindibile in qualsiasi scenario, considerando che le logiche interne del dominio sono inerentemente
+più complesse di quelle dell'adapter (es. potrebbero coinvolgere chiamate ad altri servizi, validazione sulla semantica,
+accesso a layer di persistenza, etc).
