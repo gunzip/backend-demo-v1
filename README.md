@@ -2,10 +2,10 @@
 
 Nx + pnpm monorepo with the same "adult check" use case implemented in two ways.
 
-| Area | Purpose |
-| --- | --- |
+| Area               | Purpose                                                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `apps/code-first/` | Contract, validation, and routes are defined in TypeScript/Hono code and the API publishes its OpenAPI document at runtime. |
-| `apps/api-first/` | The contract starts from `openapi.yaml`, then server and client artifacts are generated from that spec. |
+| `apps/api-first/`  | The contract starts from `openapi.yaml`, then server and client artifacts are generated from that spec.                     |
 
 ## Requirements
 
