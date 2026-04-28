@@ -1,38 +1,38 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "name": "client",
   "projectType": "application",
-  "sourceRoot": "apps/client/src",
+  "sourceRoot": "apps/code-first/client/src",
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/apps/client"],
+      "outputs": ["{workspaceRoot}/dist/apps/code-first/client"],
       "options": {
-        "command": "pnpm exec tsup --config apps/client/tsup.config.ts"
+        "command": "pnpm exec tsup --config apps/code-first/client/tsup.config.ts"
       }
     },
     "start": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsx apps/client/src/main.ts"
+        "command": "pnpm exec tsx apps/code-first/client/src/main.ts"
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec eslint --fix apps/client/src apps/client/tsup.config.ts"
+        "command": "pnpm exec eslint --fix apps/code-first/client/src apps/code-first/client/tsup.config.ts"
       }
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec vitest run --passWithNoTests --dir apps/client/src"
+        "command": "pnpm exec vitest run --passWithNoTests --dir apps/code-first/client/src"
       }
     },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc --noEmit -p apps/client/tsconfig.json"
+        "command": "pnpm exec tsc --noEmit -p apps/code-first/client/tsconfig.json"
       }
     }
   }

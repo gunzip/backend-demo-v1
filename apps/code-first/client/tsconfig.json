@@ -1,10 +1,4 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "tsBuildInfoFile": "../../node_modules/.cache/tsconfig.client.tsbuildinfo"
-  },
-  "include": [
-    "src/**/*.ts",
-    "tsup.config.ts"
-  ]
+  "extends": "../../../tsconfig.base.json",
+  "include": ["src/**/*.ts", "tsup.config.ts"]
 }

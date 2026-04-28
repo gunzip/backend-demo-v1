@@ -3,10 +3,10 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   clean: true,
   entry: {
-    main: "apps/client/src/main.ts",
+    main: "apps/code-first/client/src/main.ts",
   },
   format: ["esm"],
-  outDir: "dist/apps/client",
+  outDir: "dist/apps/code-first/client",
   platform: "node",
   sourcemap: true,
   target: "node22",
