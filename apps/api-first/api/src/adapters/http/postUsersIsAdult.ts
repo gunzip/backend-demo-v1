@@ -5,25 +5,10 @@ import type { CheckUserIsAdultInput } from "../../use-cases/check-user-is-adult.
 
 import { checkUserIsAdult } from "../../use-cases/check-user-is-adult.js";
 
-type CheckUserIsAdultResult = Awaited<ReturnType<typeof checkUserIsAdult>>;
-
 type PostUsersIsAdultContext = Parameters<PostUsersIsAdultHandler>[1];
 
-type PostUsersIsAdultDomainErrorResponse = Extract<
-  PostUsersIsAdultRouteResponse,
-  { status: "422" }
->;
-
-type PostUsersIsAdultHttpResponse =
-  GeneratedHttpResponse<PostUsersIsAdultMappedResponse>;
-
-type PostUsersIsAdultMappedResponse =
-  | PostUsersIsAdultDomainErrorResponse
-  | PostUsersIsAdultSuccessResponse;
-
-type PostUsersIsAdultSuccessResponse = Extract<
-  PostUsersIsAdultRouteResponse,
-  { status: "200" }
+type PostUsersIsAdultHttpResponse = GeneratedHttpResponse<
+  Extract<PostUsersIsAdultRouteResponse, { status: "200" | "422" }>
 >;
 
 export const postUsersIsAdultHandler: PostUsersIsAdultHandler = async (
@@ -31,38 +16,8 @@ export const postUsersIsAdultHandler: PostUsersIsAdultHandler = async (
   context,
 ) => {
   const result = await checkUserIsAdult(mapPostUsersIsAdultInput(input));
-  const mappedResponse = mapCheckUserIsAdultResult(result);
-
-  return toPostUsersIsAdultResponse(context, mappedResponse);
+  return toPostUsersIsAdultResponse(context, result);
 };
-
-function assertNever(value: never): never {
-  throw new Error(`Unsupported response mapping: ${String(value)}`);
-}
-
-function mapCheckUserIsAdultResult(
-  result: CheckUserIsAdultResult,
-): PostUsersIsAdultMappedResponse {
-  return result.match(
-    (isAdult) =>
-      ({
-        contentType: "application/json",
-        data: isAdult,
-        status: "200",
-      }) satisfies PostUsersIsAdultSuccessResponse,
-    (error) =>
-      ({
-        contentType: "application/problem+json",
-        data: {
-          detail: error.message,
-          status: 422,
-          title: "Domain validation error",
-          type: "https://example.com/problems/domain-error",
-        },
-        status: "422",
-      }) satisfies PostUsersIsAdultDomainErrorResponse,
-  );
-}
 
 function mapPostUsersIsAdultInput(
   input: Parameters<PostUsersIsAdultHandler>[0],
@@ -75,18 +30,39 @@ function mapPostUsersIsAdultInput(
 
 function toPostUsersIsAdultResponse(
   context: PostUsersIsAdultContext,
-  response: PostUsersIsAdultMappedResponse,
+  result: Awaited<ReturnType<typeof checkUserIsAdult>>,
 ): PostUsersIsAdultHttpResponse {
-  switch (response.status) {
-    case "200":
+  return result.match(
+    (isAdult) => {
+      const response: Extract<
+        PostUsersIsAdultRouteResponse,
+        { status: "200" }
+      > = {
+        contentType: "application/json",
+        data: isAdult,
+        status: "200",
+      };
       return context.json(response.data, 200, {
         "content-type": response.contentType,
       });
-    case "422":
+    },
+    (error) => {
+      const response: Extract<
+        PostUsersIsAdultRouteResponse,
+        { status: "422" }
+      > = {
+        contentType: "application/problem+json",
+        data: {
+          detail: error.message,
+          status: 422,
+          title: "Domain validation error",
+          type: "https://example.com/problems/domain-error",
+        },
+        status: "422",
+      };
       return context.json(response.data, 422, {
         "content-type": response.contentType,
       });
-    default:
-      return assertNever(response);
-  }
+    },
+  );
 }
