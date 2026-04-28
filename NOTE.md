@@ -24,11 +24,13 @@
 
 ## Esempio di approccio API First
 
-- il swe scrive solo l'implementazione di dominio, con una sua validazione indipendente da quella dell'adapter
-- l'adapter e il boilerplate del server è generato a partire da un file OpenAPI scritto a mano
-- nel server
-  - le request sono validate a runtime e automaticamente aderenti alle OpenAPI
-  - le response sono validate a compile time
-- nel client
-  - le request sono validate a compile time e automaticamente aderenti alle OpenAPI
-  - le response sono validate a runtime
+Nella scrittura dall'adapter il SWE implementa:
+
+- il mapping tra i dati già validati (automaticamente) dall'adapter nel formato che si aspetta lo use case
+- il mapping tra i dati dallo use case e quelli che si aspettano le OpenAPI (con response validate a compile time)
+- la chiamata allo use-case
+
+vantaggi:
+
+- Chi scrive l'adapter non deve preoccuparsi di cosa e come fa lo use case, ma solo di come mappare i dati in ingresso e in uscita.
+- Gli input sono aderenti alle OpenAPI con un check a runtime per le request e a compile time per le response.
