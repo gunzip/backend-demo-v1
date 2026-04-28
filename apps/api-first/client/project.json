@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "api-first-client",
+  "projectType": "application",
+  "sourceRoot": "apps/api-first/client/src",
+  "targets": {
+    "generate": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/apps/api-first/client/generated"],
+      "options": {
+        "command": "pnpm exec craft generate -i apps/api-first/openapi.yaml -o apps/api-first/client/generated --client"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/apps/api-first/client"],
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec tsup --config apps/api-first/client/tsup.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec eslint --fix apps/api-first/client/src apps/api-first/client/tsup.config.ts"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec vitest run --passWithNoTests --dir apps/api-first/client/src"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec tsc --noEmit -p apps/api-first/client/tsconfig.json"
+      }
+    }
+  }
+}

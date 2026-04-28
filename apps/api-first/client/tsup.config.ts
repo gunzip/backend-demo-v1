@@ -4,11 +4,10 @@ export default defineConfig({
   clean: true,
   dts: true,
   entry: {
-    api: "apps/api/src/api.ts",
-    index: "apps/api/src/index.ts",
+    index: "apps/api-first/client/src/index.ts",
   },
   format: ["esm"],
-  outDir: "dist/apps/api",
+  outDir: "dist/apps/api-first/client",
   platform: "node",
   sourcemap: true,
   target: "node22",

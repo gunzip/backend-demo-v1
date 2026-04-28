@@ -1,0 +1,102 @@
+info:
+  title: Adult check API
+  version: 1.0.0
+openapi: 3.0.0
+components:
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: birth_date year does not match the fiscal_code year
+        status:
+          type: number
+          example: 400
+        title:
+          type: string
+          example: Domain validation error
+        type:
+          type: string
+          example: "https://example.com/problems/domain-error"
+      required:
+        - detail
+        - status
+        - title
+        - type
+    ValidationError:
+      allOf:
+        - $ref: "#/components/schemas/ProblemDetails"
+        - type: object
+          properties:
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: invalid_string
+                  message:
+                    type: string
+                    example: Invalid input
+                  path:
+                    type: array
+                    items:
+                      anyOf:
+                        - type: string
+                        - type: number
+                    example:
+                      - body
+                      - birth_date
+                required:
+                  - code
+                  - message
+                  - path
+              example: []
+          required:
+            - errors
+    AdultCheckRequest:
+      type: object
+      properties:
+        birth_date:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: "1980-01-01"
+        fiscal_code:
+          type: string
+          pattern: '^[A-Z]{6}\d{2}[ABCDEHLMPRST]\d{2}[A-Z]\d{3}[A-Z]$'
+          example: RSSMRA80A01H501U
+      required:
+        - birth_date
+        - fiscal_code
+  parameters: {}
+paths:
+  /users/is-adult:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdultCheckRequest"
+      responses:
+        "200":
+          description: Whether the user is an adult
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        "400":
+          description: Request body validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "422":
+          description: Domain validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"

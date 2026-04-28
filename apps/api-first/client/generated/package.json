@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "@typescript/native-preview": "^7.0.0-dev"
+  },
+  "name": "generated-client",
+  "scripts": {
+    "build": "tsgo"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}
