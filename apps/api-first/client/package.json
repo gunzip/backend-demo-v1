@@ -1,0 +1,8 @@
+{
+  "name": "@backend-demo-v1/api-first-client",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "zod": "^4.0.0"
+  }
+}

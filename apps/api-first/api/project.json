@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "api-first-api",
+  "projectType": "application",
+  "sourceRoot": "apps/api-first/api/src",
+  "targets": {
+    "generate": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/apps/api-first/api/generated",
+        "{workspaceRoot}/apps/api-first/api/src/generated"
+      ],
+      "options": {
+        "command": "pnpm exec craft generate -i apps/api-first/openapi.yaml -o apps/api-first/api/generated --routes && pnpm exec tsx apps/api-first/api/src/generate-server.ts"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/apps/api-first/api"],
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec tsup --config apps/api-first/api/tsup.config.ts"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec tsx apps/api-first/api/src/api.ts"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec eslint --fix apps/api-first/api/src apps/api-first/api/vitest.config.ts apps/api-first/api/tsup.config.ts"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec vitest run --config apps/api-first/api/vitest.config.ts"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec tsc --noEmit -p apps/api-first/api/tsconfig.json"
+      }
+    }
+  }
+}
