@@ -1,6 +1,6 @@
 import type { Context, Env, TypedResponse } from "hono";
-import type { StatusCode } from "hono/utils/http-status";
-import type { JSONParsed } from "hono/utils/types";
+import type { ContentfulStatusCode, StatusCode } from "hono/utils/http-status";
+import type { InvalidJSONValue, JSONParsed, JSONValue } from "hono/utils/types";
 import type { ZodTypeAny } from "zod";
 import type * as z from "zod";
 
@@ -50,6 +50,12 @@ export interface GeneratedServerRoute {
   responseMap: Record<string, Record<string, ZodTypeAny>>;
 }
 
+type ContentfulStatusCodeMap = {
+  [TStatus in ContentfulStatusCodeString]: StatusCodeFromString<TStatus>;
+};
+
+type ContentfulStatusCodeString = `${ContentfulStatusCode}`;
+
 type ContentTypeKey<TRequestMap extends Record<string, ZodTypeAny>> = Extract<
   keyof TRequestMap,
   string
@@ -60,6 +66,8 @@ type ExtractInputPart<TValue, TKey extends string> = TValue extends object
     ? TValue[TKey]
     : never
   : never;
+
+type GeneratedJsonData = InvalidJSONValue | JSONValue | object;
 
 type GeneratedOperationResult =
   | Promise<Response | TypedResponse<unknown> | undefined>
@@ -90,11 +98,39 @@ type IsUnion<TValue, TAll = TValue> = TValue extends TValue
     : true
   : never;
 
+type JsonRouteHttpResponse<
+  TData extends GeneratedJsonData,
+  TStatus extends ContentfulStatusCodeString,
+> = Response &
+  TypedResponse<JSONParsed<TData>, StatusCodeFromString<TStatus>, "json">;
+
+type JsonRouteResponseContext = Pick<Context, "json">;
+
+type JsonRouteResponseInput<
+  TData extends GeneratedJsonData,
+  TStatus extends ContentfulStatusCodeString,
+> = PayloadStatusConstraint<TData, TStatus> & {
+  contentType: string;
+  data: TData;
+  status: TStatus;
+};
+
 type MaybeProperty<TKey extends string, TValue> = [TValue] extends [never]
   ? Record<never, never>
   : undefined extends TValue
     ? Partial<Record<TKey, Exclude<TValue, undefined>>>
     : Record<TKey, TValue>;
+
+type PayloadStatusConstraint<
+  TData extends GeneratedJsonData,
+  TStatus extends ContentfulStatusCodeString,
+> = TData extends { status: number }
+  ? {
+      data: Omit<TData, "status"> & {
+        status: StatusCodeFromString<TStatus>;
+      };
+    }
+  : unknown;
 
 type Simplify<TValue> = Record<never, never> & {
   [TKey in keyof TValue]: TValue[TKey];
@@ -102,3 +138,84 @@ type Simplify<TValue> = Record<never, never> & {
 
 type StatusCodeFromString<TStatus extends string> =
   TStatus extends `${infer TCode extends StatusCode}` ? TCode : never;
+
+export function jsonRouteResponse<
+  TData extends GeneratedJsonData,
+  TStatus extends ContentfulStatusCodeString,
+>(
+  context: JsonRouteResponseContext,
+  response: JsonRouteResponseInput<TData, TStatus>,
+): JsonRouteHttpResponse<TData, TStatus> {
+  return context.json(response.data, contentfulStatusCode(response.status), {
+    "content-type": response.contentType,
+  });
+}
+
+function contentfulStatusCode<TStatus extends ContentfulStatusCodeString>(
+  status: TStatus,
+): ContentfulStatusCodeMap[TStatus] {
+  return contentfulStatusCodes[status];
+}
+
+const contentfulStatusCodes: ContentfulStatusCodeMap = {
+  "-1": -1,
+  "100": 100,
+  "102": 102,
+  "103": 103,
+  "200": 200,
+  "201": 201,
+  "202": 202,
+  "203": 203,
+  "206": 206,
+  "207": 207,
+  "208": 208,
+  "226": 226,
+  "300": 300,
+  "301": 301,
+  "302": 302,
+  "303": 303,
+  "305": 305,
+  "306": 306,
+  "307": 307,
+  "308": 308,
+  "400": 400,
+  "401": 401,
+  "402": 402,
+  "403": 403,
+  "404": 404,
+  "405": 405,
+  "406": 406,
+  "407": 407,
+  "408": 408,
+  "409": 409,
+  "410": 410,
+  "411": 411,
+  "412": 412,
+  "413": 413,
+  "414": 414,
+  "415": 415,
+  "416": 416,
+  "417": 417,
+  "418": 418,
+  "421": 421,
+  "422": 422,
+  "423": 423,
+  "424": 424,
+  "425": 425,
+  "426": 426,
+  "428": 428,
+  "429": 429,
+  "431": 431,
+  "451": 451,
+  "500": 500,
+  "501": 501,
+  "502": 502,
+  "503": 503,
+  "504": 504,
+  "505": 505,
+  "506": 506,
+  "507": 507,
+  "508": 508,
+  "510": 510,
+  "511": 511,
+};
