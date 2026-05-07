@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -8,55 +8,60 @@ const apiProjectRoot = path.resolve("apps/api-first/api");
 
 describe("generateHonoServer", () => {
   it("does not overwrite a handwritten wrapper once it exists", async () => {
-    const handlerFilePath = path.join(
-      apiProjectRoot,
-      "src",
-      "adapters",
-      "http",
-      "postUsersIsAdult.ts",
-    );
-    const originalHandlerSource = await readFile(handlerFilePath, "utf8");
-    const customHandlerSource = `export const sentinel = "keep-me";\n`;
+    await withTempProject(async (projectRoot) => {
+      const handlerFilePath = await writeProjectFile(
+        projectRoot,
+        "src/adapters/http/postUsersIsAdult.ts",
+        `export const sentinel = "keep-me";\n`,
+      );
 
-    try {
-      await writeFile(handlerFilePath, customHandlerSource);
-      await generateHonoServer({ projectRoot: apiProjectRoot });
+      await writeProjectFile(
+        projectRoot,
+        "generated/routes/postUsersIsAdult.ts",
+        [
+          'import * as z from "zod";',
+          "",
+          "export const serverRoute = {",
+          '  method: "post",',
+          '  operationId: "postUsersIsAdult",',
+          '  path: "/users/is-adult",',
+          "  requestMap: {",
+          '    "application/json": z.object({',
+          "      birth_date: z.string(),",
+          "      fiscal_code: z.string(),",
+          "    }),",
+          "  },",
+          "  responseMap: {",
+          '    "200": {',
+          '      "application/json": z.object({ isAdult: z.boolean() }),',
+          "    },",
+          "  },",
+          "} as const;",
+          "",
+        ].join("\n"),
+      );
+
+      await generateHonoServer({ projectRoot });
 
       await expect(readFile(handlerFilePath, "utf8")).resolves.toBe(
-        customHandlerSource,
+        `export const sentinel = "keep-me";\n`,
       );
-    } finally {
-      await writeFile(handlerFilePath, originalHandlerSource);
-    }
+    });
   });
 
-  it("generates validators and typed payload plumbing for params, query, and headers", async () => {
-    const generatedRouteFilePath = path.join(
-      apiProjectRoot,
-      "generated",
-      "routes",
-      "getUserPets.ts",
-    );
-    const generatedHandlerFilePath = path.join(
-      apiProjectRoot,
-      "src",
-      "adapters",
-      "http",
-      "getUserPets.ts",
-    );
-    const generatedOperationFilePath = path.join(
-      apiProjectRoot,
-      "src",
-      "generated",
-      "operations",
-      "getUserPets.ts",
-    );
-    const generatedRoutesDirPath = path.dirname(generatedRouteFilePath);
+  it("generates validators, typed payload plumbing, and response aliases", async () => {
+    await withTempProject(async (projectRoot) => {
+      const generatedOperationFilePath = path.join(
+        projectRoot,
+        "src",
+        "generated",
+        "operations",
+        "getUserPets.ts",
+      );
 
-    await mkdir(generatedRoutesDirPath, { recursive: true });
-    try {
-      await writeFile(
-        generatedRouteFilePath,
+      await writeProjectFile(
+        projectRoot,
+        "generated/routes/getUserPets.ts",
         [
           'import * as z from "zod";',
           "",
@@ -84,7 +89,7 @@ describe("generateHonoServer", () => {
         ].join("\n"),
       );
 
-      await generateHonoServer({ projectRoot: apiProjectRoot });
+      await generateHonoServer({ projectRoot });
 
       const generatedOperationSource = await readFile(
         generatedOperationFilePath,
@@ -93,6 +98,12 @@ describe("generateHonoServer", () => {
 
       expect(generatedOperationSource).toContain(
         'import { getUserPetsHandler } from "../../adapters/http/getUserPets.js";',
+      );
+      expect(generatedOperationSource).toContain(
+        'import type { GeneratedOperationHandler, GeneratedOperationInput, GeneratedOperationResponse } from "../../runtime/operation-types.js";',
+      );
+      expect(generatedOperationSource).toContain(
+        "export type GetUserPetsHandlerResponse = GeneratedOperationResponse<GetUserPetsRoute>;",
       );
       expect(generatedOperationSource).toContain(
         'zValidator("param", getUserPetsServerRoute.params.shape.path, validationHook)',
@@ -112,11 +123,31 @@ describe("generateHonoServer", () => {
       expect(generatedOperationSource).toContain(
         'headers: context.req.valid("header")',
       );
-    } finally {
-      await rm(generatedRouteFilePath, { force: true });
-      await rm(generatedHandlerFilePath, { force: true });
-      await rm(generatedOperationFilePath, { force: true });
-      await generateHonoServer({ projectRoot: apiProjectRoot });
-    }
+    });
   });
 });
+
+async function withTempProject(run: (projectRoot: string) => Promise<void>) {
+  const projectRoot = await mkdtemp(
+    path.join(apiProjectRoot, ".tmp-generate-hono-server-"),
+  );
+
+  try {
+    await run(projectRoot);
+  } finally {
+    await rm(projectRoot, { force: true, recursive: true });
+  }
+}
+
+async function writeProjectFile(
+  projectRoot: string,
+  relativeFilePath: string,
+  source: string,
+) {
+  const filePath = path.join(projectRoot, relativeFilePath);
+
+  await mkdir(path.dirname(filePath), { recursive: true });
+  await writeFile(filePath, source);
+
+  return filePath;
+}

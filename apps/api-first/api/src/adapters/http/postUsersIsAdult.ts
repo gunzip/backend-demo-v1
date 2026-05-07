@@ -1,6 +1,4 @@
-import type { postUsersIsAdultRouteResponse } from "../../../generated/routes/postUsersIsAdult.js";
 import type { PostUsersIsAdultHandler } from "../../generated/operations/postUsersIsAdult.js";
-import type { GeneratedHttpResponse } from "../../runtime/operation-types.js";
 
 import {
   jsonErrorResponse,
@@ -8,13 +6,10 @@ import {
 } from "../../runtime/operation-types.js";
 import { checkUserIsAdult } from "../../use-cases/check-user-is-adult.js";
 
-type PostUsersIsAdultHttpResponse =
-  GeneratedHttpResponse<postUsersIsAdultRouteResponse>;
-
 export const postUsersIsAdultHandler: PostUsersIsAdultHandler = async (
   input,
   context,
-): Promise<PostUsersIsAdultHttpResponse> => {
+) => {
   const result = await checkUserIsAdult({
     birthDate: input.body.birth_date,
     fiscalCode: input.body.fiscal_code,

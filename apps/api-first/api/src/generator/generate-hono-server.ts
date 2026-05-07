@@ -98,6 +98,7 @@ function buildGeneratedOperationFile(operation: OperationDefinition) {
   const routeIdentifier = `${toCamelCase(operation.moduleBasename)}ServerRoute`;
   const registerFunctionName = `register${toPascalCase(operation.moduleBasename)}Route`;
   const handlerInputTypeName = `${toPascalCase(operation.moduleBasename)}HandlerInput`;
+  const handlerResponseTypeName = `${toPascalCase(operation.moduleBasename)}HandlerResponse`;
   const handlerTypeName = `${toPascalCase(operation.moduleBasename)}Handler`;
   const registerExpression = buildRegistrationExpression(
     operation.method,
@@ -111,12 +112,13 @@ function buildGeneratedOperationFile(operation: OperationDefinition) {
     'import type { Hono } from "hono";',
     "",
     `import { ${operation.handlerExportName} } from "../../adapters/http/${operation.moduleBasename}.js";`,
-    'import type { GeneratedOperationHandler, GeneratedOperationInput } from "../../runtime/operation-types.js";',
+    'import type { GeneratedOperationHandler, GeneratedOperationInput, GeneratedOperationResponse } from "../../runtime/operation-types.js";',
     'import { validationHook } from "../../runtime/http-problem-details.js";',
     `import { serverRoute as ${routeIdentifier} } from "${operation.routeImportPath}";`,
     "",
     `export type ${operation.operationTypeName} = typeof ${routeIdentifier};`,
     `export type ${handlerInputTypeName} = GeneratedOperationInput<${operation.operationTypeName}>;`,
+    `export type ${handlerResponseTypeName} = GeneratedOperationResponse<${operation.operationTypeName}>;`,
     `export type ${handlerTypeName} = GeneratedOperationHandler<${operation.operationTypeName}>;`,
     "",
     `export function ${registerFunctionName}<TApp extends Hono>(app: TApp) {`,

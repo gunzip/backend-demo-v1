@@ -20,7 +20,7 @@ export type GeneratedOperationHandler<
 > = (
   input: GeneratedOperationInput<TRoute>,
   context: Context<TEnv>,
-) => GeneratedOperationResult;
+) => GeneratedOperationResult<GeneratedOperationResponse<TRoute>>;
 
 export type GeneratedOperationInput<TRoute extends GeneratedServerRoute> =
   Simplify<
@@ -38,6 +38,12 @@ export type GeneratedOperationInput<TRoute extends GeneratedServerRoute> =
         ExtractInputPart<InferRouteParams<TRoute["params"]>, "query">
       >
   >;
+
+export type GeneratedOperationResponse<TRoute extends GeneratedServerRoute> = [
+  GeneratedRouteHttpResponse<TRoute>,
+] extends [never]
+  ? Response
+  : GeneratedRouteHttpResponse<TRoute>;
 
 export interface GeneratedServerRoute {
   isHeadersOptional?: boolean;
@@ -69,11 +75,14 @@ type ExtractInputPart<TValue, TKey extends string> = TValue extends object
 
 type GeneratedJsonData = InvalidJSONValue | JSONValue | object;
 
-type GeneratedOperationResult =
-  | Promise<Response | TypedResponse<unknown> | undefined>
-  | Response
-  | TypedResponse<unknown>
-  | undefined;
+type GeneratedOperationResult<
+  TResponse extends Response | TypedResponse<unknown> =
+    | Response
+    | TypedResponse<unknown>,
+> = Promise<TResponse | undefined> | TResponse | undefined;
+
+type GeneratedRouteHttpResponse<TRoute extends GeneratedServerRoute> =
+  GeneratedHttpResponse<InferRouteResponse<TRoute["responseMap"]>>;
 
 type InferRequestBody<TRequestMap extends Record<string, ZodTypeAny>> = [
   ContentTypeKey<TRequestMap>,
@@ -91,6 +100,30 @@ type InferRequestBody<TRequestMap extends Record<string, ZodTypeAny>> = [
 type InferRouteParams<TParams> = TParams extends ZodTypeAny
   ? z.infer<TParams>
   : never;
+
+type InferRouteResponse<
+  TResponseMap extends GeneratedServerRoute["responseMap"],
+> = [keyof TResponseMap] extends [never]
+  ? never
+  : {
+      [TStatus in keyof TResponseMap & string]: InferStatusRouteResponse<
+        TStatus,
+        TResponseMap[TStatus]
+      >;
+    }[keyof TResponseMap & string];
+
+type InferStatusRouteResponse<
+  TStatus extends string,
+  TResponseEntries extends GeneratedServerRoute["responseMap"][string],
+> = [keyof TResponseEntries] extends [never]
+  ? { status: TStatus }
+  : {
+      [TContentType in keyof TResponseEntries & string]: {
+        contentType: TContentType;
+        data: z.infer<TResponseEntries[TContentType]>;
+        status: TStatus;
+      };
+    }[keyof TResponseEntries & string];
 
 type IsUnion<TValue, TAll = TValue> = TValue extends TValue
   ? [TAll] extends [TValue]

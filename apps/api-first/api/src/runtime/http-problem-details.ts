@@ -1,6 +1,8 @@
 import type { Hook } from "@hono/zod-validator";
 import type { Env } from "hono";
 
+import { HTTPException } from "hono/http-exception";
+
 export interface ProblemDetails {
   detail: string;
   status: number;
@@ -18,12 +20,15 @@ export interface ValidationProblemDetails extends ProblemDetails {
   errors: ValidationIssue[];
 }
 
-export function notImplemented(operationId: string): Response {
-  return problemJson({
-    detail: `Operation ${operationId} has not been implemented yet.`,
-    status: 501,
-    title: "Not implemented",
-    type: "https://example.com/problems/not-implemented",
+export function notImplemented(operationId: string): never {
+  throw new HTTPException(501, {
+    message: `Operation ${operationId} has not been implemented yet.`,
+    res: problemJson({
+      detail: `Operation ${operationId} has not been implemented yet.`,
+      status: 501,
+      title: "Not implemented",
+      type: "https://example.com/problems/not-implemented",
+    }),
   });
 }
 
