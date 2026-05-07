@@ -4,16 +4,25 @@ import {
   jsonErrorResponse,
   jsonSuccessResponse,
 } from "../../runtime/operation-types.js";
+import {
+  jsonSessionErrorResponse,
+  validateSession,
+} from "../../runtime/session.js";
 import { checkUserIsAdult } from "../../use-cases/check-user-is-adult.js";
 
 export const postUsersIsAdultHandler: PostUsersIsAdultHandler = async (
   input,
   context,
 ) => {
+  if (!validateSession(context)) {
+    return jsonSessionErrorResponse(context);
+  }
+
   const result = await checkUserIsAdult({
     birthDate: input.body.birth_date,
     fiscalCode: input.body.fiscal_code,
   });
+
   return result.match(
     (isAdult) => jsonSuccessResponse(context, "200", isAdult),
     (error) =>

@@ -15,6 +15,9 @@ export const postUsersIsAdultResponseMap = {
   "400": {
     "application/problem+json": ValidationError,
   },
+  "401": {
+    "application/problem+json": ProblemDetails,
+  },
   "422": {
     "application/problem+json": ProblemDetails,
   },
@@ -24,6 +27,7 @@ export type postUsersIsAdultResponseMap = typeof postUsersIsAdultResponseMap;
 export type postUsersIsAdultRouteResponse =
   | { status: "200"; contentType: "application/json"; data: PostUsersIsAdult200Response; }
   | { status: "400"; contentType: "application/problem+json"; data: ValidationError; }
+  | { status: "401"; contentType: "application/problem+json"; data: ProblemDetails; }
   | { status: "422"; contentType: "application/problem+json"; data: ProblemDetails; };
 
 const baseRoute = {

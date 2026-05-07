@@ -3,11 +3,25 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createServer } from "../server";
 
-function requestAdultCheck(body: Record<string, unknown>) {
-  return request(createServer())
+const VALID_AUTHORIZATION = "Bearer demo-session";
+
+function requestAdultCheck(
+  body: Record<string, unknown>,
+  options?: { authorization?: null | string },
+) {
+  const authorization =
+    options?.authorization === null
+      ? null
+      : (options?.authorization ?? VALID_AUTHORIZATION);
+  const httpRequest = request(createServer())
     .post("/users/is-adult")
-    .set("content-type", "application/json")
-    .send(body);
+    .set("content-type", "application/json");
+
+  if (authorization !== null) {
+    httpRequest.set("authorization", authorization);
+  }
+
+  return httpRequest.send(body);
 }
 
 const REFERENCE_DATE = new Date("2026-01-01T00:00:00.000Z");
@@ -22,6 +36,27 @@ afterEach(() => {
 });
 
 describe("generated api-first server", () => {
+  it("returns 401 when the authorization header is missing", async () => {
+    const response = await requestAdultCheck(
+      {
+        birth_date: "1980-01-01",
+        fiscal_code: "RSSMRA80A01H501U",
+      },
+      { authorization: null },
+    );
+
+    expect(response.status).toBe(401);
+    expect(response.headers["content-type"]).toContain(
+      "application/problem+json",
+    );
+    expect(response.body).toEqual({
+      detail: "Missing or invalid Authorization header.",
+      status: 401,
+      title: "Authentication required",
+      type: "https://example.com/problems/unauthorized",
+    });
+  });
+
   it("returns problem details when zod validation fails", async () => {
     const response = await requestAdultCheck({
       birth_date: "1980/01/01",

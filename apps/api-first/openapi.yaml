@@ -94,6 +94,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ValidationError"
+        "401":
+          description: Authentication required
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Domain validation error
           content:

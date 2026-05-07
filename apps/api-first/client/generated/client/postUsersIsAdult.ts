@@ -19,19 +19,19 @@ export type PostUsersIsAdultResponseDeserializerMap = Partial<Record<{
 export function postUsersIsAdult<TForceValidation extends boolean = true, TRequestContentType extends keyof PostUsersIsAdultRequestMap = "application/json", TResponseContentType extends { [K in keyof PostUsersIsAdultResponseMap]: keyof PostUsersIsAdultResponseMap[K]; }[keyof PostUsersIsAdultResponseMap] = "application/json">(
   params: PostUsersIsAdultParams<TRequestContentType, TResponseContentType>,
   config: GlobalConfig & { deserializers?: PostUsersIsAdultResponseDeserializerMap } & { forceValidation: true }
-): Promise<(true extends true ? ApiResponseWithForcedParse<"200", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"200", typeof postUsersIsAdultResponseMap>) | (true extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>) | (true extends true ? ApiResponseWithForcedParse<"422", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"422", typeof postUsersIsAdultResponseMap>) | ApiResponseError>;
+): Promise<(true extends true ? ApiResponseWithForcedParse<"200", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"200", typeof postUsersIsAdultResponseMap>) | (true extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>) | (true extends true ? ApiResponseWithForcedParse<"401", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"401", typeof postUsersIsAdultResponseMap>) | (true extends true ? ApiResponseWithForcedParse<"422", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"422", typeof postUsersIsAdultResponseMap>) | ApiResponseError>;
 export function postUsersIsAdult<TForceValidation extends boolean = true, TRequestContentType extends keyof PostUsersIsAdultRequestMap = "application/json", TResponseContentType extends { [K in keyof PostUsersIsAdultResponseMap]: keyof PostUsersIsAdultResponseMap[K]; }[keyof PostUsersIsAdultResponseMap] = "application/json">(
   params: PostUsersIsAdultParams<TRequestContentType, TResponseContentType>,
   config: GlobalConfig & { deserializers?: PostUsersIsAdultResponseDeserializerMap } & { forceValidation: false }
-): Promise<(false extends true ? ApiResponseWithForcedParse<"200", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"200", typeof postUsersIsAdultResponseMap>) | (false extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>) | (false extends true ? ApiResponseWithForcedParse<"422", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"422", typeof postUsersIsAdultResponseMap>) | ApiResponseError>;
+): Promise<(false extends true ? ApiResponseWithForcedParse<"200", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"200", typeof postUsersIsAdultResponseMap>) | (false extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>) | (false extends true ? ApiResponseWithForcedParse<"401", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"401", typeof postUsersIsAdultResponseMap>) | (false extends true ? ApiResponseWithForcedParse<"422", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"422", typeof postUsersIsAdultResponseMap>) | ApiResponseError>;
 export function postUsersIsAdult<TForceValidation extends boolean = true, TRequestContentType extends keyof PostUsersIsAdultRequestMap = "application/json", TResponseContentType extends { [K in keyof PostUsersIsAdultResponseMap]: keyof PostUsersIsAdultResponseMap[K]; }[keyof PostUsersIsAdultResponseMap] = "application/json">(
   params: PostUsersIsAdultParams<TRequestContentType, TResponseContentType>,
   config?: GlobalConfig & { deserializers?: PostUsersIsAdultResponseDeserializerMap }
-): Promise<(TForceValidation extends true ? ApiResponseWithForcedParse<"200", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"200", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"422", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"422", typeof postUsersIsAdultResponseMap>) | ApiResponseError>;
+): Promise<(TForceValidation extends true ? ApiResponseWithForcedParse<"200", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"200", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"401", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"401", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"422", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"422", typeof postUsersIsAdultResponseMap>) | ApiResponseError>;
 export async function postUsersIsAdult<TForceValidation extends boolean = true, TRequestContentType extends keyof PostUsersIsAdultRequestMap = "application/json", TResponseContentType extends { [K in keyof PostUsersIsAdultResponseMap]: keyof PostUsersIsAdultResponseMap[K]; }[keyof PostUsersIsAdultResponseMap] = "application/json">(
   params: PostUsersIsAdultParams<TRequestContentType, TResponseContentType>,
   config: GlobalConfig & { deserializers?: PostUsersIsAdultResponseDeserializerMap } = globalConfig
-): Promise<(TForceValidation extends true ? ApiResponseWithForcedParse<"200", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"200", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"422", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"422", typeof postUsersIsAdultResponseMap>) | ApiResponseError> {
+): Promise<(TForceValidation extends true ? ApiResponseWithForcedParse<"200", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"200", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"401", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"401", typeof postUsersIsAdultResponseMap>) | (TForceValidation extends true ? ApiResponseWithForcedParse<"422", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"422", typeof postUsersIsAdultResponseMap>) | ApiResponseError> {
     try {
   const finalRequestContentType = params.contentType?.request || "application/json";
   let bodyContent: RequestBody = "";
@@ -152,6 +152,38 @@ export async function postUsersIsAdult<TForceValidation extends boolean = true, 
           parse: () => parseApiResponseUnknownData(minimalResponse, data, postUsersIsAdultResponseMap["400"], config.deserializers ?? {})
         } satisfies ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>;
         return manualResult as unknown as (TForceValidation extends true ? ApiResponseWithForcedParse<"400", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"400", typeof postUsersIsAdultResponseMap>);
+      }
+    }
+    if (response.status === 401) {
+
+      if (config.forceValidation) {
+        /* Force validation: automatically parse and return result */
+        const parseResult = parseApiResponseUnknownData(minimalResponse, data, postUsersIsAdultResponseMap["401"], config.deserializers ?? {});
+        if ("parsed" in parseResult) {
+          const forcedResult = createForcedParseResponse("401", data, response, parseResult);
+          // Need a bridge assertion to the conditional return type because generic TForceValidation isn't narrowed by runtime branch
+          return forcedResult as unknown as (TForceValidation extends true ? ApiResponseWithForcedParse<"401", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"401", typeof postUsersIsAdultResponseMap>);
+        }
+        if (parseResult.kind) {
+          const errorResult = {
+            ...parseResult,
+            isValid: false as const,
+            status: undefined,
+            result: { data, status: "401", response },
+          } satisfies ApiResponseError;
+          return errorResult;
+        }
+        throw new Error("Invalid parse result");
+      } else {
+        /* Manual validation: provide parse method */
+        const manualResult = {
+          isValid: true as const,
+          status: "401" as const,
+          data,
+          response,
+          parse: () => parseApiResponseUnknownData(minimalResponse, data, postUsersIsAdultResponseMap["401"], config.deserializers ?? {})
+        } satisfies ApiResponseWithParse<"401", typeof postUsersIsAdultResponseMap>;
+        return manualResult as unknown as (TForceValidation extends true ? ApiResponseWithForcedParse<"401", typeof postUsersIsAdultResponseMap> : ApiResponseWithParse<"401", typeof postUsersIsAdultResponseMap>);
       }
     }
     if (response.status === 422) {

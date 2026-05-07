@@ -5,6 +5,8 @@ import { AdultCheckRequest } from "../../generated/schemas/AdultCheckRequest";
 import { FiscalCode } from "../domain/fiscal-code";
 import { createServer } from "../server";
 
+const VALID_AUTHORIZATION = "Bearer demo-session";
+
 interface AdapterAcceptedCase {
   readonly body: {
     readonly birth_date: string;
@@ -86,6 +88,7 @@ function freezeReferenceDate() {
 function requestAdultCheck(body: AdapterAcceptedCase["body"]) {
   return request(createServer())
     .post("/users/is-adult")
+    .set("authorization", VALID_AUTHORIZATION)
     .set("content-type", "application/json")
     .send(body);
 }
