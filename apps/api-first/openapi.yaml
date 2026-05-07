@@ -2,7 +2,15 @@ info:
   title: Adult check API
   version: 1.0.0
 openapi: 3.0.0
+
 components:
+  securitySchemes:
+    bearerToken:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-auth-scheme: bearer
+
   schemas:
     ProblemDetails:
       type: object
@@ -74,6 +82,8 @@ components:
 paths:
   /users/is-adult:
     post:
+      security:
+        - bearerToken: []
       requestBody:
         required: true
         content:

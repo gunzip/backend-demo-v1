@@ -3,6 +3,11 @@ import { PostUsersIsAdult200Response } from "../schemas/PostUsersIsAdult200Respo
 import { ValidationError } from "../schemas/ValidationError.js";
 import { ProblemDetails } from "../schemas/ProblemDetails.js";
 
+import {
+  postUsersIsAdultParsedParams,
+  postUsersIsAdultServerParsedParams,
+} from "../schemas/postUsersIsAdultParameters.js";
+
 export const postUsersIsAdultRequestMap = {
   "application/json": AdultCheckRequest,
 } as const;
@@ -40,14 +45,14 @@ const baseRoute = {
 
 export const clientRoute = {
   ...baseRoute,
-  params: undefined,
+  params: postUsersIsAdultParsedParams,
   isQueryOptional: true,
-  isHeadersOptional: true,
+  isHeadersOptional: false,
 } as const;
 
 export const serverRoute = {
   ...baseRoute,
-  params: undefined,
+  params: postUsersIsAdultServerParsedParams,
   isQueryOptional: true,
-  isHeadersOptional: true,
+  isHeadersOptional: false,
 } as const;

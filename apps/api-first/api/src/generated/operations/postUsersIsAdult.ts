@@ -15,9 +15,11 @@ export function registerPostUsersIsAdultRoute<TApp extends Hono>(app: TApp) {
   return app.post(
       "/users/is-adult",
       zValidator("json", postUsersIsAdultServerRoute.requestMap["application/json"], validationHook),
+      zValidator("header", postUsersIsAdultServerRoute.params.shape.headers, validationHook),
     async (context) => {
       const input = {
         body: context.req.valid("json"),
+        headers: context.req.valid("header"),
       } satisfies PostUsersIsAdultHandlerInput;
 
       return postUsersIsAdultHandler(input, context);

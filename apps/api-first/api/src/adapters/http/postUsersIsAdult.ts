@@ -14,7 +14,7 @@ export const postUsersIsAdultHandler: PostUsersIsAdultHandler = async (
   input,
   context,
 ) => {
-  if (!validateSession(context)) {
+  if (!validateSession(input.headers.authorization)) {
     return jsonSessionErrorResponse(context);
   }
 

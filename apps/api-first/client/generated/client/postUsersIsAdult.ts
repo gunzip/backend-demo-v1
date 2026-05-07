@@ -1,8 +1,9 @@
 import type { GlobalConfig, ApiResponse, ApiResponseError, ApiResponseWithParse, ApiResponseWithForcedParse, RequestBody } from "./config.js";
 import { globalConfig, parseResponseBody, parseApiResponseUnknownData, createForcedParseResponse } from "./config.js";
+import * as z from "zod";
 import { postUsersIsAdultRequestMap as postUsersIsAdultRequestMap, postUsersIsAdultResponseMap as postUsersIsAdultResponseMap, clientRoute as postUsersIsAdultClientRoute } from "../routes/postUsersIsAdult.js";
 
-type PostUsersIsAdultParams<TRequestContentType extends keyof PostUsersIsAdultRequestMap = "application/json", TResponseContentType = "application/json"> = {
+type PostUsersIsAdultParams<TRequestContentType extends keyof PostUsersIsAdultRequestMap = "application/json", TResponseContentType = "application/json"> = z.infer<NonNullable<typeof postUsersIsAdultClientRoute.params>> & {
   body: import('zod').infer<PostUsersIsAdultRequestMap[TRequestContentType]>;
   contentType?: { request?: TRequestContentType; response?: TResponseContentType };
 };
@@ -52,7 +53,9 @@ export async function postUsersIsAdult<TForceValidation extends boolean = true, 
     "Accept": params.contentType?.response || "application/json",
     ...contentTypeHeader,
     };
-    
+        const _sec_Authorization = params.headers['Authorization'];
+    if (_sec_Authorization === undefined) throw new Error('Missing required security header: Authorization');
+    finalHeaders['Authorization'] = _sec_Authorization;
 
     const url = new URL(`${config.baseURL.replace(/\/$/, '')}/users/is-adult`);
     

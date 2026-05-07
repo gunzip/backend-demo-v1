@@ -42,7 +42,7 @@ describe("generated api-first server", () => {
         birth_date: "1980-01-01",
         fiscal_code: "RSSMRA80A01H501U",
       },
-      { authorization: null },
+      { authorization: "foo" },
     );
 
     expect(response.status).toBe(401);
