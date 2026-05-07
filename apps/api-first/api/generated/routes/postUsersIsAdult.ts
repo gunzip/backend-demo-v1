@@ -47,7 +47,7 @@ export const clientRoute = {
   ...baseRoute,
   params: postUsersIsAdultParsedParams,
   isQueryOptional: true,
-  isHeadersOptional: false,
+  isHeadersOptional: true,
 } as const;
 
 export const serverRoute = {

@@ -1,11 +1,14 @@
 import type { z } from "zod/v4";
 
 // Configuration types
+export type AuthHeaders = 'Authorization';
 
 export interface GlobalConfig {
   baseURL: string;
   fetch: typeof fetch;
-    headers: {};
+    headers: {
+    [K in AuthHeaders]: string;
+  };
   deserializers?: DeserializerMap;
   forceValidation?: boolean;
 }
@@ -13,7 +16,9 @@ export interface GlobalConfig {
 export const globalConfig: GlobalConfig = {
   baseURL: '',
   fetch: fetch,
-  headers: {},
+  headers: {
+    'Authorization': ''
+  },
   forceValidation: true
 };
 
@@ -147,7 +152,35 @@ export type ApiResponseWithForcedParse<
 };
 
 /* Common request body union for generated clients */
-export type RequestBody = string | Blob | ArrayBuffer | FormData | undefined;
+type RequestBodyArrayBufferView = Extract<
+  NonNullable<RequestInit["body"]>,
+  ArrayBufferView
+>;
+
+function isRequestBodyArrayBufferView(
+  body: unknown,
+): body is RequestBodyArrayBufferView {
+  return ArrayBuffer.isView(body);
+}
+
+export type RequestBody = RequestInit["body"] | undefined;
+
+export function normalizeRequestBody(body: unknown): RequestBody {
+  if (body === undefined || body === null || typeof body === "string") {
+    return body;
+  }
+  if (
+    body instanceof Blob ||
+    body instanceof ArrayBuffer ||
+    isRequestBodyArrayBufferView(body) ||
+    body instanceof FormData ||
+    body instanceof URLSearchParams ||
+    (typeof ReadableStream !== "undefined" && body instanceof ReadableStream)
+  ) {
+    return body;
+  }
+  return JSON.stringify(body);
+}
 
 /* Helper to build FormData from a plain object. */
 export function buildFormData(input: unknown): FormData {

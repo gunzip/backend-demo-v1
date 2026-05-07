@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 /* Parameter schemas for type-safe inputs */
-const postUsersIsAdultHeadersSchema = z.object({ "Authorization": z.string() });
+const postUsersIsAdultHeadersSchema = z.object({ "Authorization": z.string().optional() });
 
 /* Server parameter schemas with coercion and lowercase headers */
 const postUsersIsAdultServerHeadersSchema = z.object({ "authorization": z.string() });
@@ -17,7 +17,7 @@ export type postUsersIsAdultHeadersSchema = z.infer<typeof postUsersIsAdultHeade
 
 /* Combined parsed parameters object */
 export const postUsersIsAdultParsedParams = z.object({
-  headers: postUsersIsAdultHeadersSchema
+  headers: postUsersIsAdultHeadersSchema.optional()
 });
 
 /* Combined parsed parameters type */
