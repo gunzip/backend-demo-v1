@@ -2,7 +2,10 @@ import type { postUsersIsAdultRouteResponse } from "../../../generated/routes/po
 import type { PostUsersIsAdultHandler } from "../../generated/operations/postUsersIsAdult.js";
 import type { GeneratedHttpResponse } from "../../runtime/operation-types.js";
 
-import { jsonRouteResponse } from "../../runtime/operation-types.js";
+import {
+  jsonErrorResponse,
+  jsonSuccessResponse,
+} from "../../runtime/operation-types.js";
 import { checkUserIsAdult } from "../../use-cases/check-user-is-adult.js";
 
 type PostUsersIsAdultHttpResponse =
@@ -17,22 +20,10 @@ export const postUsersIsAdultHandler: PostUsersIsAdultHandler = async (
     fiscalCode: input.body.fiscal_code,
   });
   return result.match(
-    (isAdult) =>
-      jsonRouteResponse(context, {
-        contentType: "application/json",
-        data: isAdult,
-        status: "200",
-      }),
+    (isAdult) => jsonSuccessResponse(context, "200", isAdult),
     (error) =>
-      jsonRouteResponse(context, {
-        contentType: "application/problem+json",
-        data: {
-          detail: error.message,
-          status: 422,
-          title: "Domain validation error",
-          type: "https://example.com/problems/domain-error",
-        },
-        status: "422",
+      jsonErrorResponse(context, "422", {
+        detail: error.message,
       }),
   );
 };

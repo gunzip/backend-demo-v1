@@ -151,10 +151,94 @@ export function jsonRouteResponse<
   });
 }
 
+export function jsonSuccessResponse<
+  TStatus extends ContentfulStatusCodeString,
+  TData extends GeneratedJsonData,
+>(
+  context: JsonRouteResponseContext,
+  status: TStatus,
+  data: JsonRouteResponseInput<TData, TStatus>["data"],
+) {
+  return jsonRouteResponse(context, {
+    contentType: "application/json",
+    data,
+    status,
+  } as JsonRouteResponseInput<TData, TStatus>);
+}
+
 function contentfulStatusCode<TStatus extends ContentfulStatusCodeString>(
   status: TStatus,
 ): ContentfulStatusCodeMap[TStatus] {
   return contentfulStatusCodes[status];
+}
+
+const errorResponseMetadata = {
+  "400": {
+    title: "Request validation failed",
+    type: "https://example.com/problems/validation-error",
+  },
+  "401": {
+    title: "Authentication required",
+    type: "https://example.com/problems/unauthorized",
+  },
+  "403": {
+    title: "Forbidden",
+    type: "https://example.com/problems/forbidden",
+  },
+  "404": {
+    title: "Resource not found",
+    type: "https://example.com/problems/not-found",
+  },
+  "409": {
+    title: "Conflict",
+    type: "https://example.com/problems/conflict",
+  },
+  "422": {
+    title: "Domain validation error",
+    type: "https://example.com/problems/domain-error",
+  },
+  "500": {
+    title: "Internal server error",
+    type: "https://example.com/problems/internal-server-error",
+  },
+} as const satisfies Partial<
+  Record<
+    ContentfulStatusCodeString,
+    {
+      title: string;
+      type: string;
+    }
+  >
+>;
+
+type ErrorResponseStatus = ContentfulStatusCodeString &
+  keyof typeof errorResponseMetadata;
+
+export function jsonErrorResponse<
+  TStatus extends ErrorResponseStatus,
+  TData extends { detail: string },
+>(
+  context: JsonRouteResponseContext,
+  status: TStatus,
+  data: Omit<TData, "status" | "title" | "type">,
+) {
+  return jsonRouteResponse(context, {
+    contentType: "application/problem+json",
+    data: {
+      ...data,
+      status: contentfulStatusCode(status),
+      title: errorResponseMetadata[status].title,
+      type: errorResponseMetadata[status].type,
+    },
+    status,
+  } as JsonRouteResponseInput<
+    Omit<TData, "status" | "title" | "type"> & {
+      status: StatusCodeFromString<TStatus>;
+      title: (typeof errorResponseMetadata)[TStatus]["title"];
+      type: (typeof errorResponseMetadata)[TStatus]["type"];
+    },
+    TStatus
+  >);
 }
 
 const contentfulStatusCodes: ContentfulStatusCodeMap = {
