@@ -1,11 +1,12 @@
 # backend-demo-v1
 
-Nx + pnpm monorepo with the same "adult check" use case implemented in two ways.
+Nx + pnpm monorepo with the same "adult check" use case implemented in three ways.
 
-| Area               | Purpose                                                                                                                     |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `apps/code-first/` | Contract, validation, and routes are defined in TypeScript/Hono code and the API publishes its OpenAPI document at runtime. |
-| `apps/api-first/`  | The contract starts from `openapi.yaml`, then server and client artifacts are generated from that spec.                     |
+| Area                  | Purpose                                                                                                                           |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/code-first/`    | Contract, validation, and routes are defined in TypeScript/Hono code and the API publishes its OpenAPI document at runtime.       |
+| `apps/api-first/`     | The contract starts from `openapi.yaml`, then server and client artifacts are generated from that spec.                           |
+| `apps/api-first-af/`  | The contract starts from `openapi.yaml`, then Azure Functions v4 `app.http(...)` handlers are generated from the server routes.   |
 
 ## Requirements
 
@@ -130,3 +131,34 @@ pnpm nx run api-first-client:typecheck
 - The OpenAPI contract is authored in `apps/api-first/openapi.yaml`, not served dynamically by the API.
 - `apps/api-first/client` is a generated client library entrypoint (`src/index.ts`), not a CLI like `apps/code-first/client`.
 - The API and client targets depend on generation, so Nx will regenerate artifacts before build/test/lint/typecheck when needed.
+
+## `apps/api-first-af/`
+
+`apps/api-first-af/` contains the Azure Functions v4 spec-driven implementation:
+
+- `apps/api-first-af/openapi.yaml`: source of truth for the contract
+- `apps/api-first-af/api`: generated Azure Functions app (`api-first-af-api` Nx project)
+
+### Generate artifacts
+
+```bash
+pnpm nx run api-first-af-api:generate
+```
+
+### Run and validate
+
+```bash
+pnpm nx run api-first-af-api:serve
+
+pnpm nx run api-first-af-api:build
+pnpm nx run api-first-af-api:test
+pnpm nx run api-first-af-api:lint
+pnpm nx run api-first-af-api:typecheck
+```
+
+### Notes
+
+- The Azure Functions app is registered from `apps/api-first-af/api/src/index.ts`.
+- Generated Azure Functions wrappers live under `apps/api-first-af/api/src/generated/`.
+- The `serve` target builds the app and then runs `func start` on port `7072`.
+- The OpenAPI contract is authored in `apps/api-first-af/openapi.yaml`.

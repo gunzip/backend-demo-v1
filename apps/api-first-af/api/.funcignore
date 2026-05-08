@@ -1,0 +1,3 @@
+local.settings.json
+src/**/*.test.ts
+vitest.config.ts

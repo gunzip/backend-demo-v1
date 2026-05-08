@@ -2,6 +2,7 @@ packages:
   - packages/*
   - apps/code-first/*
   - apps/api-first/*
+  - apps/api-first-af/*
 
 linkWorkspacePackages: true
 packageImportMethod: "clone-or-copy"

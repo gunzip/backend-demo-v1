@@ -1,0 +1,11 @@
+{
+  "name": "@backend-demo-v1/api-first-af-api",
+  "private": true,
+  "main": "dist/src/index.js",
+  "type": "module",
+  "dependencies": {
+    "@azure/functions": "^4.14.0",
+    "neverthrow": "^8.2.0",
+    "zod": "^4.0.0"
+  }
+}

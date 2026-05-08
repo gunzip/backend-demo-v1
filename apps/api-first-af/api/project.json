@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "api-first-af-api",
+  "projectType": "application",
+  "sourceRoot": "apps/api-first-af/api/src",
+  "targets": {
+    "generate": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/apps/api-first-af/api/generated",
+        "{workspaceRoot}/apps/api-first-af/api/src/generated"
+      ],
+      "options": {
+        "command": "pnpm exec craft generate -i apps/api-first-af/openapi.yaml -o apps/api-first-af/api/generated --routes && pnpm exec tsx apps/api-first-af/api/src/generate-functions.ts"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/apps/api-first-af/api/dist"],
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec tsc -p apps/api-first-af/api/tsconfig.build.json"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "cd apps/api-first-af/api && pnpm exec func start --port 7072"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec eslint --fix apps/api-first-af/api/src apps/api-first-af/api/vitest.config.ts"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec vitest run --config apps/api-first-af/api/vitest.config.ts"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["generate"],
+      "options": {
+        "command": "pnpm exec tsc --noEmit -p apps/api-first-af/api/tsconfig.json"
+      }
+    }
+  }
+}
